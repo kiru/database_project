@@ -8,6 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import numpy as np
 import pandas as pd
+
 from sqlalchemy import create_engine
 
 #sqlalchemy engine for connection

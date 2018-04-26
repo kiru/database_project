@@ -1,4 +1,5 @@
 click==6.7
+cx-Oracle==6.2.1
 Flask==0.12.2
 itsdangerous==0.24
 Jinja2==2.10
