@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from sqlalchemy import create_engine
 from sqlalchemy import text
 
@@ -23,7 +23,11 @@ def hello_world():
     for row in result:
         names.append(row[0])
 
-    return 'Hello World!: ' + "<br />".join(str(x) for x in names)
+    return render_template('index.html', title='Home')
+
+@app.route('/search/')
+def search():
+    return render_template('search.html')
 
 
 if __name__ == '__main__':
