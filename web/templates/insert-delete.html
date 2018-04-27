@@ -41,39 +41,6 @@
         </nav>
         <h3 class="text-muted">Database Project</h3>
     </div>
-
-    <div>
-        <form method="GET">
-            <input type="text" class="form-control" id="inputText"
-                   name="query" placeholder="Type here to search.."
-                   value="{{ query }}">
-            <input type="submit" value="Search" class="btn btn-primary" v>
-
-            <input type="submit" value="Advanced Options" class="btn btn-primary">
-        </form>
-    </div>
-
-    <div>
-        <table class="table">
-            <thead>
-            <tr>
-                <th scope="col">Name</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for country in countries %}
-                <tr>
-                    <th scope="row">
-                        <span>{{ country }}</span> <br/>
-                    </th>
-                </tr>
-            {% endfor %}
-            </tbody>
-
-
-        </table>
-
-    </div>
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript
