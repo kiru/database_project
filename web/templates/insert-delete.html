@@ -26,7 +26,7 @@
         <nav>
             <ul class="nav nav-pills float-right">
                 <li class="nav-item">
-                    <a class="nav-link active" href="/">TODO <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/">TODO</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/search/">Search</a>
@@ -35,7 +35,7 @@
                     <a class="nav-link" href="/predefined/">Predefined Queries</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/insert/">Insert / Delete</a>
+                    <a class="nav-link active" href="/insert/">Insert / Delete <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </nav>
@@ -43,33 +43,37 @@
     </div>
 
     <div>
-        <p>In the context of this project we require the following functionality:</p>
-        <ul>
-            <li>
-                Implement a query submission interface. This should not be a text box where SQL is typed. It should be
-                a set of boxes and drop-down menus.
-            </li>
-            <li>
-                The Query submission interface should be able to accommodate all the queries requested in the context
-                of this project. Make sure to accommodate a way to input parameters without displaying SQL code to
-                the user.
-            </li>
-            <li>
-                The results of the queries should be printed in a user-friendly manner -- not just a console printout of
-                the results. Some options would be either visualizing results in a page-based format (e.g., like the
-                biography box in a wiki page) or clean column printouts (clear column separation and easily legible text).
-            </li>
-            <li>
-                The search box. Add a word-based search box, which you can use to perform keyword-based search
-                without necessarily knowing the schema of the data (e.g., search for ‘Frank Miller’). The follow-up search
-                functionality should allow the user to choose one of the results (e.g., by clicking on it or selecting a box
-                next to it) and get more information about it
-            </li>
-        </ul>
-            <pre>
-            </pre>
+        <form method="GET">
+            <input type="text" class="form-control" id="inputText"
+                   name="query" placeholder="Type here to search.."
+                   value="{{ query }}">
+            <input type="submit" value="Search" class="btn btn-primary" v>
+
+            <input type="submit" value="Advanced Options" class="btn btn-primary">
+        </form>
     </div>
 
+    <div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th scope="col">Name</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for country in countries %}
+                <tr>
+                    <th scope="row">
+                        <span>{{ country }}</span> <br/>
+                    </th>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+
+        </table>
+
+    </div>
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript
