@@ -4,6 +4,7 @@ from flask import Flask, render_template, request
 from sqlalchemy import create_engine
 from sqlalchemy import text
 
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -24,14 +25,20 @@ def search():
     input = request.args.get('query')
     engine = createEngine()
 
-    sql = text('select COUNTRYNAME from Country where lower(COUNTRYNAME) like :search')
-    result = engine.execute(sql, search="%{}%".format(input).lower())
     names = []
-    for row in result:
-        print(row[0])
-        names.append(row[0])
+
+    search_country(engine, input, names, 'select count(*) from Country where lower(COUNTRYNAME) like :search')
+    search_country(engine, input, names, 'select count(*) from Language where lower(language) like :search', "Languager")
 
     return render_template('search.html', countries=names, query=input)
+
+
+def search_country(engine, input, names, search, country="Country"):
+    sql = text(search)
+    result = engine.execute(sql, search="%{}%".format(input).lower())
+    row = result.fetchone();
+    if row[0] > 0:
+        names.append(country);
 
 
 @app.route('/predefined/<query_nr>/')
@@ -75,8 +82,11 @@ def read_queries():
 def insert():
     return render_template('insert-delete.html')
 
-
 def createEngine():
+    engine = create_engine('sqlite:///../imported_files/database.db');
+    return engine
+
+def createEngineOracle():
     oracle_connection_string = 'oracle+cx_oracle://{username}:{password}@{hostname}:{port}/{database}'
     engine = create_engine(oracle_connection_string.format(
         username='DB2018_G17',

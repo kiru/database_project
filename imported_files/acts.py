@@ -24,7 +24,7 @@ dfp=person_table()
 #replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
 df['FullName']=df['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
-df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
+df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(), dfp['PERSON_ID'].tolist())
 
 print('Split entries with multi-clip data...')
 dfsplit=pd.concat([pd.Series(row['FullName'],

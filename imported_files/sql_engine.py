@@ -19,6 +19,12 @@ from sqlalchemy import create_engine
 
 def get_engine():
     #sqlalchemy engine for connection
+    engine =  create_engine('sqlite:///database.db');
+    return engine
+
+
+def get_engine_for_oracle():
+    #sqlalchemy engine for connection
     oracle_connection_string = 'oracle+cx_oracle://{username}:{password}@{hostname}:{port}/{database}'
     engine = create_engine(
         oracle_connection_string.format(
