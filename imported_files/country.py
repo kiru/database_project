@@ -39,10 +39,11 @@ def main():
     #get table
     df=country_table()
     #create engine and connect
-    engine=get_engine()
-    engine.connect()
+    #engine=get_engine()
+    #engine.connect()
     #insert data into the DB
-    df.to_sql('COUNTRY', engine, if_exists='append',index=False)
+    #df.to_sql('COUNTRY', engine, if_exists='append',index=False)
+    df.to_csv('country.csv', index=False)
     
 if __name__ == "__main__":
     main()

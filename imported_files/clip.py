@@ -56,18 +56,20 @@ def main():
     #get table
     df=clip_table()
     #create engine and connect
-    engine=get_engine()
-    engine.connect()
+    #engine=get_engine()
+    #engine.connect()
     #insert data into the DB
     print('The final data shape is: ',df.shape)
-    print('Part I...')
-    df.iloc[0:500000].to_sql('CLIP', engine, if_exists='append',index=False)
-    print('Part II...')
-    df.iloc[500000:1000000].to_sql('CLIP', engine, if_exists='append',index=False)
-    print('Part III...')
-    df.iloc[1000000:1500000].to_sql('CLIP', engine, if_exists='append',index=False)
-    print('Part IV...')
-    df.iloc[1500000:1736161].to_sql('CLIP', engine, if_exists='append',index=False)
+    #print('Part I...')
+    #df.iloc[0:500000].to_sql('CLIP', engine, if_exists='append',index=False)
+    #print('Part II...')
+    #df.iloc[500000:1000000].to_sql('CLIP', engine, if_exists='append',index=False)
+    #print('Part III...')
+    #df.iloc[1000000:1500000].to_sql('CLIP', engine, if_exists='append',index=False)
+    #print('Part IV...')
+    #df.iloc[1500000:1736161].to_sql('CLIP', engine, if_exists='append',index=False)
+
+    df.to_csv('clip.csv', index=False)
     
 if __name__ == "__main__":
     main()
