@@ -10,9 +10,9 @@ import pandas as pd
 
 from sql_engine import get_engine
 
-def genre_table():
+def country_table():
     #read the data
-    genre_path='../../../data/db2018imdb/genres.csv'
+    genre_path='../../../data/db2018imdb/countries.csv'
     df = pd.read_csv(genre_path)
     
     #query about the relation
@@ -22,7 +22,7 @@ def genre_table():
     print(df.shape)
     
     #select only unique entries
-    dfu=df.drop_duplicates(subset=['Genre'],keep='first')
+    dfu=df.drop_duplicates(subset=['CountryName'],keep='first')
     print(dfu.shape)
     
     #reset the index and put it into ClipId
@@ -30,19 +30,19 @@ def genre_table():
     dfi['ClipId']=dfi.index
     
     #rename columns
-    dfi.columns=['GENRE_ID','GENRE'] #use clip_id as genre_id here
+    dfi.columns=['COUNTRY_ID','COUNTRYNAME'] #use clip_id as genre_id here
     print(dfi)
     
     return dfi
-
+    
 def main():
     #get table
-    df=genre_table()
+    df=country_table()
     #create engine and connect
     engine=get_engine()
     engine.connect()
     #insert data into the DB
-    df.to_sql("GENRE", engine, if_exists='append',index=False)
+    df.to_sql('COUNTRY', engine, if_exists='append',index=False)
     
 if __name__ == "__main__":
     main()
