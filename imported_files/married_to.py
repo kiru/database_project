@@ -13,13 +13,13 @@ from sql_engine import get_engine
 from person import person_table
 
 
-#read the data
+print('read the data...') #(explicitly name columns because it inserts NaN where column number is not consistent)
 path='../../../data/db2018imdb/biographies.csv'
-df = pd.read_csv(path)
+df = pd.read_csv(path, names=['Name','RealName','Nickname','DateAndPlaceOfBirth',
+'Height','Biography','Biographer','DateAndCauseOfDeath','Spouse','Trivia','BiographicalBooks',
+'PersonalQuotes','Salary','Trademark','WhereAreTheyNow'],skiprows=1)
 
-#get the definition of the language table
-print('Get the person name-id relation...')
-dfp=person_table()
+df[pd.isnull(df['Spouse'])]
 
 
 
