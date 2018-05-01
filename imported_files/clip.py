@@ -60,14 +60,14 @@ def main():
     engine.connect()
     #insert data into the DB
     print('The final data shape is: ',df.shape)
-    #print('Part I...')
-    df.to_sql('CLIP', engine, if_exists='append',index=False)
-    #print('Part II...')
-    #df.iloc[500000:1000000].to_sql('CLIP', engine, if_exists='append',index=False)
-    #print('Part III...')
-    #df.iloc[1000000:1500000].to_sql('CLIP', engine, if_exists='append',index=False)
-    #print('Part IV...')
-    #df.iloc[1500000:1736161].to_sql('CLIP', engine, if_exists='append',index=False)
+    print('Part I...')
+    df.to_sql('CLIP', engine, if_exists='append', index=False, chunksize=1000)
+#    print('Part II...')
+#    df.iloc[500000:1000000].to_sql('CLIP', engine, if_exists='append',index=False)
+#    print('Part III...')
+#    df.iloc[1000000:1500000].to_sql('CLIP', engine, if_exists='append',index=False)
+#    print('Part IV...')
+#    df.iloc[1500000:1736161].to_sql('CLIP', engine, if_exists='append',index=False)
     
 if __name__ == "__main__":
     main()
