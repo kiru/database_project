@@ -57,8 +57,8 @@ print('Maximum length of character is ',maxlenc)
 print('Maximum length of additional info is ',maxlena)
 
 
-##create engine and connect
-#engine=get_engine()
-#engine.connect()
-##insert data into the DB
-#dfsplit.iloc[0:1].to_sql('ACTS', engine, if_exists='append',index=False)
+#create engine and connect
+engine=get_engine()
+engine.connect()
+#insert data into the DB
+dfsplit.to_sql('ACTS', engine, if_exists='append',index=False,chunksize=1000)
