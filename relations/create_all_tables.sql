@@ -173,9 +173,7 @@ CREATE TABLE Biography
   salary            CHAR(20),
   trademark         CHAR(20),
   wherenow          CHAR(200),
-  spouse_id         INTEGER,
   person_id         INTEGER NOT NULL,
-  FOREIGN KEY (spouse_id) REFERENCES Person (person_id),
   FOREIGN KEY (person_id) REFERENCES Person (person_id)
     ON DELETE CASCADE,
   PRIMARY KEY (biography_id)
@@ -188,4 +186,17 @@ CREATE TABLE BiographicalBooks
   biography_id INTEGER NOT NULL,
   FOREIGN KEY (biography_id) REFERENCES Biography (biography_id),
   PRIMARY KEY (book_id)
+);
+
+CREATE TABLE Married_to
+(
+  married_id  INTEGER NOT NULL,
+  biography_id  INTEGER NOT NULL,
+  person_id INTEGER NOT NULL,
+  date CHAR(50),
+  state CHAR(20),
+  children CHAR(20),
+  PRIMARY KEY (married_id)
+  FOREIGN KEY (biography_id) REFERENCES Biography (biography_id),
+  FOREIGN KEY (person_id) REFERENCES Person (person_id)
 );
