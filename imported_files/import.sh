@@ -18,7 +18,7 @@ python clip_links.py
 python person.py
 #python biography.py
 python directs.py
-#python acts.py
+python acts.py
 #python writes.py
 #python produces.py
 

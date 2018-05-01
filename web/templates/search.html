@@ -16,7 +16,6 @@
           integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
     <link rel="stylesheet" href="/static/custom.css"/>
 
-    <style></style>
 </head>
 
 <body data-gr-c-s-loaded="true">
@@ -25,9 +24,6 @@
     <div class="header clearfix">
         <nav>
             <ul class="nav nav-pills float-right">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">TODO</a>
-                </li>
                 <li class="nav-item">
                     <a class="nav-link active" href="/search/">Search <span class="sr-only">(current)</span></a>
                 </li>
@@ -42,36 +38,80 @@
         <h3 class="text-muted">Database Project</h3>
     </div>
 
-    <div class="row">
-        <form method="GET" class="col-md-5">
-            <input type="text" class="form-control" id="inputText"
-                   name="query" placeholder="Type here to search.."
-                   value="{{ query }}">
+    <div>
+        <form method="GET">
+
+            <div class="row">
+                <div class="col-md-5">
+                    {% if query != None %}
+                        <input type="text" class="form-control" id="inputText" name="query"
+                               placeholder="Type here to search.." value="{{ query }}">
+                    {% else %}
+                        <input type="text" class="form-control" id="inputText" name="query"
+                               placeholder="Type here to search..">
+                    {% endif %}
+                </div>
+
+                <div class="col-md-5">
+                    <input type="submit" value="Search" class="btn btn-primary">
+                    <input value="Advanced Options" class="btn btn-default btn-xs" id="btn-advanced">
+                </div>
+            </div>
+
+            <div class="row advanced" style="padding-top: 10px; ">
+
+                <label class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck1">
+                        <label class="custom-control-label" for="customCheck1">Clips</label>
+                    </div>
+                </label>
+                <label class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck2">
+                        <label class="custom-control-label" for="customCheck2">Language</label>
+                    </div>
+                </label>
+
+                <label class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3">
+                        <label class="custom-control-label" for="customCheck3">Country</label>
+                    </div>
+                </label>
+
+                <label class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck3">
+                        <label class="custom-control-label" for="customCheck3">Person</label>
+                    </div>
+                </label>
+
+                <label class="custom-control custom-checkbox">
+                    <div class="custom-control custom-checkbox">
+                        <input type="checkbox" class="custom-control-input" id="customCheck4">
+                        <label class="custom-control-label" for="customCheck4">Actor</label>
+                    </div>
+                </label>
+
+            </div>
         </form>
-        <div class="col-md-5">
-            <input type="submit" value="Search" class="btn btn-primary">
-            <input type="submit" value="Advanced Options" class="btn btn-default btn-xs">
+
+        <div class="advanced">
+
         </div>
+
     </div>
     <br/>
-    {% if countries %}
+    {% if tables and query %}
+        <h2>Found results: </h2>
         <div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for country in countries %}
-                    <tr>
-                        <th scope="row">
-                            <span>{{ country }}</span> <br/>
-                        </th>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+            {% for table in tables %}
+                <a href="show/{{ table }}/?query={{ query }}">
+                    <h4>
+                        <span>{{ table }}</span> <br/>
+                    </h4></a>
+            {% endfor %}
         </div>
     {% endif %}
 </div> <!-- /container -->
@@ -89,6 +129,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
         integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
         crossorigin="anonymous"></script>
-
+<script src="/static/jquery-3.3.1.min.js"></script>
+<script type="application/javascript">
+    $(function () {
+        $(".advanced").hide();
+        $("#btn-advanced").click(function () {
+            $(".advanced").toggle();
+        });
+    });
+</script>
 </body>
 </html>

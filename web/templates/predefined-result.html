@@ -39,68 +39,30 @@
         <h3 class="text-muted">Database Project</h3>
     </div>
 
-    <div>
-        <div>
-            <h4><a href="/predefined/1">Longest clip</a></h4>
-            <form>
-                <div class="form-group">
-                    <label for="input1">Country</label>
-                    <input type="text" class="form-control" id="input1" placeholder="France">
-                    <input type="submit" class="btn btn-primary" value="Run">
-                </div>
-            </form>
-        </div>
-        <hr />
-        <div>
-            <h4><a href="/predefined/2/">Number of clips per country</a></h4>
-            <form>
-                <div class="form-group">
-                    <label for="input3">Year</label>
-                    <input type="text" class="form-control" id="input3" placeholder="2001">
-                </div>
-                <input type="submit" class="btn btn-primary" value="Run">
-            </form>
-        </div>
-        <hr/>
-        <div>
-            <h4><a href="/predefined/2/">Number of clips per genre</a></h4>
-            <form>
-                <div class="form-group">
-                    <label for="input2">Country</label>
-                    <input type="text" class="form-control" id="input2" placeholder="France">
-                </div>
-                <div class="form-group">
-                    <label for="input3">Year</label>
-                    <input type="text" class="form-control" id="input3" placeholder="2001">
-                </div>
-                <input type="submit" class="btn btn-primary" value="Run">
-            </form>
-        </div>
 
-        {% for query in queries %}
-        {% endfor %}
+    <h2>Longest Clips:</h2>
+    <div>
+        <table class="table table-condensed ">
+            <thead>
+            <tr>
+                <th scope="col">Clip Name</th>
+                <th>Length</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row"><span>The undead man</span> <br/></th>
+                <th><span>12 hours</span> <br/></th>
+            </tr>
+            <tr>
+                <th scope="row"><span>Watch paint dry</span> <br/></th>
+                <th><span>2 hours</span> <br/></th>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-    {% if countries %}
-        <div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for r in result %}
-                    <tr>
-                        <th scope="row">
-                            <span>{{ r }}</span> <br/>
-                        </th>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
+
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript

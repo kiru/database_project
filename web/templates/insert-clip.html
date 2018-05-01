@@ -29,10 +29,11 @@
                     <a class="nav-link" href="/search/">Search</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/predefined/">Predefined Queries</a>
+                    <a class="nav-link" href="/predefined/">Predefined Queries</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/insert/">Insert / Delete <span class="sr-only">(current)</span></a>
+                    <a class="nav-link active" href="/insert/">Insert / Delete <span
+                            class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </nav>
@@ -40,67 +41,36 @@
     </div>
 
     <div>
-        <div>
-            <h4><a href="/predefined/1">Longest clip</a></h4>
-            <form>
-                <div class="form-group">
-                    <label for="input1">Country</label>
-                    <input type="text" class="form-control" id="input1" placeholder="France">
-                    <input type="submit" class="btn btn-primary" value="Run">
-                </div>
-            </form>
+        <h2>Add new Clip</h2>
+        <div class="form-group row">
+            <label for="example-text-input" class="col-2 col-form-label">Title</label>
+            <div class="col-10">
+                <input class="form-control" type="text" value="" id="example-text-input">
+            </div>
         </div>
-        <hr />
-        <div>
-            <h4><a href="/predefined/2/">Number of clips per country</a></h4>
-            <form>
-                <div class="form-group">
-                    <label for="input3">Year</label>
-                    <input type="text" class="form-control" id="input3" placeholder="2001">
-                </div>
-                <input type="submit" class="btn btn-primary" value="Run">
-            </form>
+        <div class="form-group row">
+            <label for="example-search-input" class="col-2 col-form-label">Yeaer</label>
+            <div class="col-10">
+                <input class="form-control" type="search" value="" id="example-search-input">
+            </div>
         </div>
-        <hr/>
-        <div>
-            <h4><a href="/predefined/2/">Number of clips per genre</a></h4>
-            <form>
-                <div class="form-group">
-                    <label for="input2">Country</label>
-                    <input type="text" class="form-control" id="input2" placeholder="France">
-                </div>
-                <div class="form-group">
-                    <label for="input3">Year</label>
-                    <input type="text" class="form-control" id="input3" placeholder="2001">
-                </div>
-                <input type="submit" class="btn btn-primary" value="Run">
-            </form>
+        <div class="form-group row">
+            <label for="exampleSelect1" class="col-2 col-form-label">Type</label>
+            <div class="col-10">
+                <select class="form-control" id="exampleSelect1">
+                    <option>V</option>
+                    <option>TV</option>
+                    <option>VG</option>
+                    <option>SE</option>
+                    <option></option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group float-right">
+            <input type="submit" class="btn btn-primary" value="Save">
         </div>
 
-        {% for query in queries %}
-        {% endfor %}
     </div>
-
-    {% if countries %}
-        <div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for r in result %}
-                    <tr>
-                        <th scope="row">
-                            <span>{{ r }}</span> <br/>
-                        </th>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript

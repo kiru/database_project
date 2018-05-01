@@ -19,6 +19,14 @@ def hello_world():
 
     return render_template('index.html', title='Home')
 
+@app.route('/search/show/<table>/')
+def search_result(table):
+    input = request.args.get('query')
+    engine = createEngine()
+
+    names = []
+    return render_template('search-result.html', tables=names, query=input)
+
 
 @app.route('/search/')
 def search():
@@ -28,9 +36,9 @@ def search():
     names = []
 
     search_country(engine, input, names, 'select count(*) from Country where lower(COUNTRYNAME) like :search')
-    search_country(engine, input, names, 'select count(*) from Language where lower(language) like :search', "Languager")
+    search_country(engine, input, names, 'select count(*) from Language where lower(language) like :search', "Language")
 
-    return render_template('search.html', countries=names, query=input)
+    return render_template('search.html', tables=names, query=input)
 
 
 def search_country(engine, input, names, search, country="Country"):
@@ -44,23 +52,23 @@ def search_country(engine, input, names, search, country="Country"):
 @app.route('/predefined/<query_nr>/')
 def query_result(query_nr):
 
-    objects = os.listdir('queries')
+    # objects = os.listdir('queries')
+    #
+    # o = objects[int(float(query_nr)) - 1]
+    # with open(os.path.join('queries', o)) as f:
+    #     query = f.read()
+    #
+    # engine = createEngine()
+    #
+    # sql = text(query)
+    # result = engine.execute(sql)
+    #
+    # r = []
+    # for row in result:
+    #     print(row[0])
+    #     r.append(row[0])
 
-    o = objects[int(float(query_nr)) - 1]
-    with open(os.path.join('queries', o)) as f:
-        query = f.read()
-
-    engine = createEngine()
-
-    sql = text(query)
-    result = engine.execute(sql)
-
-    r = []
-    for row in result:
-        print(row[0])
-        r.append(row[0])
-
-    return render_template('predefined.html', queries=(read_queries()), result=r)
+    return render_template('predefined-result.html')
 
 
 @app.route('/predefined/')
@@ -77,6 +85,10 @@ def read_queries():
         queries.append(first_line.replace("-- Name: ", ""))
     return queries
 
+
+@app.route('/insert/clip/')
+def insert_clip():
+    return render_template('insert-clip.html')
 
 @app.route('/insert/')
 def insert():

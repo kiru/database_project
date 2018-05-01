@@ -1,6 +1,6 @@
 -- Name: Longest clip
 
-select * from (
+-- select * from (
   SELECT
     C.CLIP_ID,
     C.CLIP_TITLE as Title,
@@ -11,4 +11,4 @@ select * from (
     JOIN RUNS R ON c.CLIP_ID = R.CLIP_ID
   WHERE C2.COUNTRYNAME = 'France'
   GROUP BY c.CLIP_ID, c.CLIP_TITLE
-) where ROWNUM  < 10
+-- ) where ROWNUM  < 10
