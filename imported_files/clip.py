@@ -44,7 +44,7 @@ def clip_table():
     df_type=df.drop_duplicates(subset=['ClipType'],keep='first')
     df_ts=df_type.sort_values(by=['ClipType'],ascending=False)
     #covers VG,V,TV,SE and NaN: print(df_ts['ClipType'])
-    
+
     # NaNs are correctly transformed into NULL -> No need to manipulate the clips further
     
     #rename columns
@@ -62,12 +62,6 @@ def main():
     print('The final data shape is: ',df.shape)
     print('Part I...')
     df.to_sql('CLIP', engine, if_exists='append', index=False, chunksize=1000)
-#    print('Part II...')
-#    df.iloc[500000:1000000].to_sql('CLIP', engine, if_exists='append',index=False)
-#    print('Part III...')
-#    df.iloc[1000000:1500000].to_sql('CLIP', engine, if_exists='append',index=False)
-#    print('Part IV...')
-#    df.iloc[1500000:1736161].to_sql('CLIP', engine, if_exists='append',index=False)
-    
+
 if __name__ == "__main__":
     main()
