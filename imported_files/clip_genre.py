@@ -19,6 +19,8 @@ df = pd.read_csv(path)
 #get the definition of the genre table
 dfl=genre_table()
 
+df.drop_duplicates(inplace=True)
+
 #replace all language strings with the corresponding id (EXPENSIVE)
 df['Genre']=df['Genre'].replace(dfl['GENRE'].tolist(),dfl['GENRE_ID'].tolist())
 
