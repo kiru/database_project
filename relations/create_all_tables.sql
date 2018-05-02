@@ -173,7 +173,8 @@ CREATE TABLE Biography
   salary            CHAR(20),
   trademark         CHAR(20),
   wherenow          CHAR(200),
-  person_id         INTEGER NOT NULL,
+  -- temporary makes person_id not nullable
+  person_id         INTEGER,
   FOREIGN KEY (person_id) REFERENCES Person (person_id)
     ON DELETE CASCADE,
   PRIMARY KEY (biography_id)
