@@ -37,11 +37,10 @@ def language_table():
 
     dfu['Language'] = dfu.Language.str.lower()
     dfu['Language'] = dfu['Language'].astype('str')
-    dfu['Language'] = dfu['Language'].apply(capt)
+    dfu['Language'] = dfu['Language'].apply(capt).str.encode('utf-8')
 
     languages = pd.Series(sorted(dfu.Language.unique()))
     # dfu['Language']=dfu['Language'].str.encode('utf-8') #encode strings as unicode for accents etc.
-
     #reset the index and put it into ClipId
     id=languages.reset_index(drop=True)
     # dfi['ClipId']=dfi.index
@@ -53,7 +52,7 @@ def language_table():
     print('Maximum length of title is ',maxlen)
 
     #rename columns
-    dfi.columns=['LANGUAGE_ID','LANGUAGE'] #use clip_id as genre_id here
+    # dfi.columns=['LANGUAGE_ID','LANGUAGE'] #use clip_id as genre_id here
     print(dfi)
     
     return dfi
