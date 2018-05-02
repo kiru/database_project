@@ -25,83 +25,88 @@ def biography_table(spouse = False):
     'Height','Biography','Biographer','DateAndCauseOfDeath','Spouse','Trivia','BiographicalBooks',
     'PersonalQuotes','Salary','Trademark','WhereAreTheyNow'],skiprows=1)
 
-    #get the definition of the person table
-    print('Get the person name-id relation...')
-    dfp=person_table()
 
-    #replace all language strings with the corresponding id (EXPENSIVE)
-    print('Replace person name with id...')
-    df['Name']=df['Name'].str.encode('utf-8') #encode strings as unicode for accents etc.
-    # df['Name']=df['Name'].replace(dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
+    if not spouse:
+        #get the definition of the person table
+        # print('Get the person name-id relation...')
+        # dfp=person_table()
 
-    print('extract birth date and write to new column...')
-    df['BIRTH_DATE']=df['DateAndPlaceOfBirth']
-    (rows,columns)=df.shape
-    for row in range(rows):
-        df['BIRTH_DATE'][row]=pd.to_datetime(df['BIRTH_DATE'][row], format='%d %B %Y', errors='ignore', exact=False)
-        df['BIRTH_DATE'][row]=pd.to_datetime(df['BIRTH_DATE'][row], format='%B %Y', errors='ignore', exact=False)
-        df['BIRTH_DATE'][row]=pd.to_datetime(df['BIRTH_DATE'][row], format='%Y', errors='coerce', exact=False)
-    #remove date from place of birth
-    df['DateAndPlaceOfBirth']=df['DateAndPlaceOfBirth'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        #replace all language strings with the corresponding id (EXPENSIVE)
+        print('Replace person name with id...')
+        df['Name']=df['Name'].str.encode('utf-8') #encode strings as unicode for accents etc.
+        # df['Name']=df['Name'].replace(dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
 
-    print('extract death date and write to new column...')
-    df['DEATH_DATE']=df['DateAndCauseOfDeath']
-    (rows,columns)=df.shape
-    for row in range(rows):
-        df['DEATH_DATE'][row]=pd.to_datetime(df['DEATH_DATE'][row], format='%d %B %Y', errors='ignore', exact=False)
-        df['DEATH_DATE'][row]=pd.to_datetime(df['DEATH_DATE'][row], format='%B %Y', errors='ignore', exact=False)
-        df['DEATH_DATE'][row]=pd.to_datetime(df['DEATH_DATE'][row], format='%Y', errors='coerce', exact=False)
-    #remove date from place of birth
-    df['DateAndCauseOfDeath']=df['DateAndCauseOfDeath'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        print('extract birth date and write to new column...')
+        df['BIRTH_DATE']=df['DateAndPlaceOfBirth']
+        (rows,columns)=df.shape
+        for row in range(rows):
+            df['BIRTH_DATE'][row]=pd.to_datetime(df['BIRTH_DATE'][row], format='%d %B %Y', errors='ignore', exact=False)
+            df['BIRTH_DATE'][row]=pd.to_datetime(df['BIRTH_DATE'][row], format='%B %Y', errors='ignore', exact=False)
+            df['BIRTH_DATE'][row]=pd.to_datetime(df['BIRTH_DATE'][row], format='%Y', errors='coerce', exact=False)
+        #remove date from place of birth
+        df['DateAndPlaceOfBirth']=df['DateAndPlaceOfBirth'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
 
-    print('encode utf-8...')
-    df['Biography']=df['Biography'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
-    df['Trivia']=df['Trivia'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
-    df['PersonalQuotes']=df['PersonalQuotes'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
-    df['Salary']=df['Salary'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
-    df['Trademark']=df['Trademark'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
-    df['WhereAreTheyNow']=df['WhereAreTheyNow'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        print('extract death date and write to new column...')
+        df['DEATH_DATE']=df['DateAndCauseOfDeath']
+        (rows,columns)=df.shape
+        for row in range(rows):
+            df['DEATH_DATE'][row]=pd.to_datetime(df['DEATH_DATE'][row], format='%d %B %Y', errors='ignore', exact=False)
+            df['DEATH_DATE'][row]=pd.to_datetime(df['DEATH_DATE'][row], format='%B %Y', errors='ignore', exact=False)
+            df['DEATH_DATE'][row]=pd.to_datetime(df['DEATH_DATE'][row], format='%Y', errors='coerce', exact=False)
+        #remove date from place of birth
+        df['DateAndCauseOfDeath']=df['DateAndCauseOfDeath'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
 
-    print('Rename columns...')
-    df.columns=['FULLNAME','REALNAME','NICKNAME','BIRTH_PLACE',
-    'HEIGHT','BIOGRAPHY','BIOGRAPHER','DEATH_CAUSE','Spouse',
-    'TRIVIA','BiographicalBooks','PERSONALQUOTES','SALARY','TRADEMARK','WHERENOW',
-    'BIRTH_DATE','DEATH_DATE']
+        print('encode utf-8...')
+        df['Biography']=df['Biography'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        df['Trivia']=df['Trivia'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        df['PersonalQuotes']=df['PersonalQuotes'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        df['Salary']=df['Salary'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        df['Trademark']=df['Trademark'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
+        df['WhereAreTheyNow']=df['WhereAreTheyNow'].str.replace('(.*\d\d\d\d)','').str.encode('utf-8')
 
-    #get maximum lengths of strings
-    maxlength(df,'REALNAME')
-    maxlength(df,'NICKNAME')
-    maxlength(df,'BIRTH_PLACE')
-    maxlength(df,'BIOGRAPHY')
-    maxlength(df,'BIOGRAPHER')
-    maxlength(df,'DEATH_CAUSE')
-    maxlength(df,'TRIVIA')
-    maxlength(df,'PERSONALQUOTES')
-    maxlength(df,'SALARY')
-    maxlength(df,'TRADEMARK')
-    maxlength(df,'WHERENOW')
+        print('Rename columns...')
+        df.columns=['FULLNAME','REALNAME','NICKNAME','BIRTH_PLACE',
+        'HEIGHT','BIOGRAPHY','BIOGRAPHER','DEATH_CAUSE','Spouse',
+        'TRIVIA','BiographicalBooks','PERSONALQUOTES','SALARY','TRADEMARK','WHERENOW',
+        'BIRTH_DATE','DEATH_DATE']
 
-    print('convert height from feet,inch into cm')
-    feet=pd.to_numeric(df['HEIGHT'].str.extract('(.*(?=\'))'),errors='coerce',downcast='float')
-    itmp=df['HEIGHT'].str.extract('\'\s(..)')
-    inch=pd.to_numeric(itmp.str.replace('"',''),errors='coerce',downcast='float')
-    halfinch=pd.to_numeric(df['HEIGHT'].str.extract('(.(?=/))'),errors='coerce',downcast='float')
-    cm=pd.to_numeric(df['HEIGHT'].str.extract('(.*(?=cm))'),errors='coerce',downcast='float')
-    height=cm.fillna(0)+feet.fillna(0)*30.48+(inch.fillna(0)+0.5*halfinch.fillna(0))*2.54
-    df['HEIGHT']=height.replace(0,np.nan)
+        #get maximum lengths of strings
+        maxlength(df,'REALNAME')
+        maxlength(df,'NICKNAME')
+        maxlength(df,'BIRTH_PLACE')
+        maxlength(df,'BIOGRAPHY')
+        maxlength(df,'BIOGRAPHER')
+        maxlength(df,'DEATH_CAUSE')
+        maxlength(df,'TRIVIA')
+        maxlength(df,'PERSONALQUOTES')
+        maxlength(df,'SALARY')
+        maxlength(df,'TRADEMARK')
+        maxlength(df,'WHERENOW')
 
+        print('convert height from feet,inch into cm')
+        feet=pd.to_numeric(df['HEIGHT'].str.extract('(.*(?=\'))'),errors='coerce',downcast='float')
+        itmp=df['HEIGHT'].str.extract('\'\s(..)')
+        inch=pd.to_numeric(itmp.str.replace('"',''),errors='coerce',downcast='float')
+        halfinch=pd.to_numeric(df['HEIGHT'].str.extract('(.(?=/))'),errors='coerce',downcast='float')
+        cm=pd.to_numeric(df['HEIGHT'].str.extract('(.*(?=cm))'),errors='coerce',downcast='float')
+        height=cm.fillna(0)+feet.fillna(0)*30.48+(inch.fillna(0)+0.5*halfinch.fillna(0))*2.54
+        df['HEIGHT']=height.replace(0,np.nan)
+    else:
+        print('Rename columns...')
+        df.columns = ['FULLNAME', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
+                      'HEIGHT', 'BIOGRAPHY', 'BIOGRAPHER', 'DEATH_CAUSE', 'Spouse',
+                      'TRIVIA', 'BiographicalBooks', 'PERSONALQUOTES', 'SALARY', 'TRADEMARK', 'WHERENOW']
     #add index
     df['BIOGRAPHY_ID']=df.index
-
-    dfselect=df[['PERSON_ID','REALNAME','NICKNAME','BIRTH_PLACE',
-    'HEIGHT','BIOGRAPHY','BIOGRAPHER','DEATH_CAUSE',
-    'TRIVIA','PERSONALQUOTES','SALARY','TRADEMARK','WHERENOW',
-    'BIRTH_DATE','DEATH_DATE','BIOGRAPHY_ID']]
 
     if spouse:
         return df
 
     else:
+        dfselect = df[['PERSON_ID', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
+                       'HEIGHT', 'BIOGRAPHY', 'BIOGRAPHER', 'DEATH_CAUSE',
+                       'TRIVIA', 'PERSONALQUOTES', 'SALARY', 'TRADEMARK', 'WHERENOW',
+                       'BIRTH_DATE', 'DEATH_DATE', 'BIOGRAPHY_ID']]
         return dfselect
 
 
