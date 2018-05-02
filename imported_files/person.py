@@ -12,11 +12,13 @@ import re
 from sql_engine import get_engine
 
 
-def capt(x):
+def capt(x, reg=r"(?<=\')(.*?)(?=\')", ret=None):
     # Capture word between parantheses
-    m = re.search(r"(?<=\')(.*?)(?=\')", x)
+    m = re.search(reg, x)
     if m:
         return m.group(1)
+    elif ret:
+        return ret
     else:
         return x
 
@@ -48,8 +50,8 @@ def person_table():
 
     # Get just the name
     dfspouse['index'] = dfspouse['index'].str.replace(r"\'\?\'", r"\'unknown'")
-    dfspouse['index'] = dfspouse['index'].apply(capt)
-    
+    dfspouse['index'] = dfspouse['index'].apply(lambda x: capt(x))
+
     print('Combine all persons...')
     dfall=df1['FullName'].append(df2['FullName'].append(df3['FullName'].append(df4['FullName'].append(df5['FullName']).append(dfspouse['index']))))
     print('Size of all person data combined: ',dfall.shape)
