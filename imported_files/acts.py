@@ -10,12 +10,13 @@ import numpy as np
 import pandas as pd
 
 from sql_engine import get_engine
-from person import person_table
+from person import person_table,replace_name_id
 
 
 #read the data
 path='../../../data/db2018imdb/actors.csv'
 df = pd.read_csv(path)
+print('Size of the "acts" table after import: ', df.shape)
 
 #get the definition of the language table
 print('Get the person name-id relation...')
@@ -24,7 +25,9 @@ dfp=person_table()
 #replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
 df['FullName']=df['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
-df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(), dfp['PERSON_ID'].tolist())
+#df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(), dfp['PERSON_ID'].tolist())
+df=df.sort_values(by=['FullName'],ascending=True) #sort the values by name to make replace work
+df['FullName']=replace_name_id(df['FullName'],dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
 
 print('Split entries with multi-clip data...')
 dfsplit=pd.concat([pd.Series(row['FullName'],

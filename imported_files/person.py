@@ -20,6 +20,22 @@ def capt(x):
     else:
         return x
 
+def replace_name_id(series,replace_list,value_list):
+    #function assumes that series and replaces_list are sorted
+    if (len(replace_list)!=len(value_list)):
+        print('Replace list and value list must be of the same length')
+        return -1
+    (rows,)=series.shape
+    listlen=len(replace_list)
+    offset=0
+    for i in range(rows):
+        for j in range(listlen-offset):
+            jj=j+offset
+            if(series[i]==replace_list[jj]):
+                series[i]=value_list[jj]
+                offset=j
+                break
+    return series
 
 def person_table():
     #read the data
@@ -59,7 +75,8 @@ def person_table():
     print('Size of unique person data: ',dfu.shape)
     
     #sort relation, encode as utf-8, find longest string
-    dfs=dfu.sort_values(ascending=True).str.encode('utf-8')
+    dfu=dfu.str.encode('utf-8')
+    dfs=dfu.sort_values(ascending=True)
     lengths=dfs.str.len()
     maxlen=lengths.sort_values(ascending=False).iloc[0]
     print('Maximum length of fullname is ',maxlen)

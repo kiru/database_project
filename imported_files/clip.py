@@ -19,7 +19,7 @@ def clip_table():
     (rows,cols)=df.shape
     print(df.columns)
     print(df.dtypes)
-    print('The full data shape is: ',df.shape)
+    print('The full data shape of "clips" is: ',df.shape)
     
     #CLEANING
     #########
@@ -60,7 +60,6 @@ def main():
     engine.connect()
     #insert data into the DB
     print('The final data shape is: ',df.shape)
-    print('Part I...')
     df.to_sql('CLIP', engine, if_exists='append', index=False, chunksize=1000)
 
 if __name__ == "__main__":

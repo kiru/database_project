@@ -9,30 +9,30 @@ Created on Thu Apr 26 15:20:57 2018
 import pandas as pd
 
 from sql_engine import get_engine
-from person import person_table
+from person import person_table,replace_name_id
 
 
 #read the data
 path='../../../data/db2018imdb/producers.csv'
 df = pd.read_csv(path)
+print('Size of the "produces" table after import: ', df.shape)
 
 #get the definition of the language table
 print('Get the person name-id relation...')
 dfp=person_table()
 
-dftmp=df.iloc[0:5]
-dfptmp=dfp.iloc[0:1000]
-
 #replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
-dftmp['FullName']=dftmp['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
-dftmp['FullName']=dftmp['FullName'].replace(dfptmp['FULLNAME'].tolist(),dfptmp['PERSON_ID'].tolist())
+df['FullName']=df['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
+#df['FullName']=df['FullName'].replace(df['FULLNAME'].tolist(),df['PERSON_ID'].tolist())
+df=df.sort_values(by=['FullName'],ascending=True) #sort the values by name to make replace work
+df['FullName']=replace_name_id(df['FullName'],dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
 
 print('Split entries with multi-clip data...')
 dfsplit=pd.concat([pd.Series(row['FullName'],
                                [row['ClipIds'].split('|'),
                                 row['Roles'].split('|'),
-                                row['AddInfos'].split('|')]) for _, row in dftmp.iterrows()]).reset_index()
+                                row['AddInfos'].split('|')]) for _, row in df.iterrows()]).reset_index()
 print('Rename columns...')
 dfsplit.columns=['CLIP_ID','ROLE','ADDITIONAL_INFO','PERSON_ID']
 
@@ -57,4 +57,4 @@ print('Maximum length of additional info is ',maxlena)
 engine=get_engine()
 engine.connect()
 #insert data into the DB
-dfsplit.iloc[0:1].to_sql('PRODUCES', engine, if_exists='append',index=False)
+dfsplit.to_sql('PRODUCES', engine, if_exists='append',index=False)
