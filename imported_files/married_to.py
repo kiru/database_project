@@ -1,73 +1,42 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 26 15:20:57 2018
-
-@author: florian
-"""
-
 import numpy as np
 import pandas as pd
+from biography import biography_table
+from person import person_table
+from person import capt
+
 
 from sql_engine import get_engine
 from person import person_table
 
+dfperson = person_table()
+dfbio = biography_table(spouse = True)
+df = dfbio[~pd.isnull(dfbio['Spouse'])]
 
-print('read the data...') #(explicitly name columns because it inserts NaN where column number is not consistent)
-path='../../../data/db2018imdb/biographies.csv'
-df = pd.read_csv(path, names=['Name','RealName','Nickname','DateAndPlaceOfBirth',
-'Height','Biography','Biographer','DateAndCauseOfDeath','Spouse','Trivia','BiographicalBooks',
-'PersonalQuotes','Salary','Trademark','WhereAreTheyNow'],skiprows=1)
+df = df[['BIOGRAPHY_ID', 'FULLNAME', 'Spouse']]
+dfmarried=pd.concat([pd.Series(row['BIOGRAPHY_ID'],
+                               row['Spouse'].split('|')) for _, row in df.iterrows()]).reset_index()
 
-df[pd.isnull(df['Spouse'])]
+dfmarried['index'] = dfmarried['index'].map(lambda x: x.lstrip('[').rstrip(']'))
+    # print("SPOUSE\n",dfspouse['index'])
+
+    # Get just the name
+dfmarried1 = dfmarried.copy()
+dfmarried1['index'] = dfmarried1['index'].str.replace(r"\'\?\'", r"\'unknown'")
+dfmarried1['index'] = dfmarried1['index'].apply(lambda x: capt(x)).str.encode('utf-8')
+dfmarried1.columns = ['FULLNAME', 'BIOGRAPHY_ID']
+
+dfmarried1['DATE'] = dfmarried['index'].apply(lambda x: capt(x, reg = r"(?<=\s\()(.*?)(?=\))", ret = "unknown"))
+dfmarried1['MARITAL_STATUS'] = dfmarried['index'].apply(lambda x: capt(x, reg = r"(?<=\)\s\()(.*?)(?=\))", ret = "married/unknown"))
+dfmarried1['CHILDREN'] = dfmarried['index'].apply(lambda x: capt(x, reg = r"(?<=\;\s)(.*?)(?=$)", ret = "0/unknown"))
 
 
-
-
-
-
-
-
-
-
-#replace all language strings with the corresponding id (EXPENSIVE)
-print('Replace person name with id...')
-df['FullName']=df['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
-df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(), dfp['PERSON_ID'].tolist())
-
-print('Split entries with multi-clip data...')
-dfsplit=pd.concat([pd.Series(row['FullName'],
-                               [row['ClipIds'].split('|'),
-                                row['Chars'].split('|'),
-                                row['OrdersCredit'].split('|'),
-                                row['AddInfos'].split('|')]) for _, row in df.iterrows()]).reset_index()
-print('Rename columns...')
-dfsplit.columns=['CLIP_ID','CHARACTER','ORDERS_CREDIT','ADDITIONAL_INFO','PERSON_ID']
-
-print('Remove []-characters...')
-dfsplit['CLIP_ID'] = dfsplit['CLIP_ID'].map(lambda x: x.lstrip('[').rstrip(']'))
-dfsplit['CHARACTER'] = dfsplit['CHARACTER'].map(lambda x: x.lstrip('[').rstrip(']')).str.encode('utf-8')
-dfsplit['ORDERS_CREDIT'] = dfsplit['ORDERS_CREDIT'].map(lambda x: x.lstrip('[').rstrip(']'))
-dfsplit['ADDITIONAL_INFO'] = dfsplit['ADDITIONAL_INFO'].map(lambda x: x.lstrip('[').rstrip(']')).str.encode('utf-8')
-
-#convert the integers to numbers
-pd.to_numeric(dfsplit['CLIP_ID'],errors='coerce',downcast='integer')
-dfsplit['ORDERS_CREDIT'] = dfsplit['ORDERS_CREDIT'].replace('', np.nan, regex=True)
-pd.to_numeric(dfsplit['ORDERS_CREDIT'],errors='coerce',downcast='float')
-dfsplit['CLIP_ID']=dfsplit['CLIP_ID'].astype('int64')
-dfsplit['ORDERS_CREDIT']=dfsplit['ORDERS_CREDIT'].astype('float')
-
-#give size of strings
-clengths=dfsplit['CHARACTER'].str.len()
-alengths=dfsplit['ADDITIONAL_INFO'].str.len()
-maxlenc=clengths.sort_values(ascending=False).iloc[0]
-maxlena=alengths.sort_values(ascending=False).iloc[0]
-print('Maximum length of character is ',maxlenc)
-print('Maximum length of additional info is ',maxlena)
+dfmarried2 = dfmarried1.merge(dfperson, left_on = 'FULLNAME', right_on = 'FULLNAME', how = 'left')
+dfmarried2 = dfmarried2[['BIOGRAPHY_ID', 'PERSON_ID', 'DATE', 'MARITAL_STATUS', 'CHILDREN']]
+print(dfmarried2.head())
 
 
 #create engine and connect
 engine=get_engine()
 engine.connect()
 #insert data into the DB
-dfsplit.to_sql('ACTS', engine, if_exists='append',index=False,chunksize=1000)
+#    df.iloc[0:1].to_sql('PERSON', engine, if_exists='append',index=False)
