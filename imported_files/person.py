@@ -42,9 +42,9 @@ def person_table():
     dfspouse=pd.concat([pd.Series(row['FullName'],
                                   row['Spouse'].split('|')) for _, row in df5.iterrows()]).reset_index()
 
-    print("AHAHSDF",dfspouse.head())
+    # print("AHAHSDF",dfspouse.head())
     dfspouse['index'] = dfspouse['index'].map(lambda x: x.lstrip('[').rstrip(']'))
-    print("SPOUSE\n",dfspouse['index'])
+    # print("SPOUSE\n",dfspouse['index'])
 
     # Get just the name
     dfspouse['index'] = dfspouse['index'].str.replace(r"\'\?\'", r"\'unknown'")
@@ -53,7 +53,7 @@ def person_table():
     print('Combine all persons...')
     dfall=df1['FullName'].append(df2['FullName'].append(df3['FullName'].append(df4['FullName'].append(df5['FullName']).append(dfspouse['index']))))
     print('Size of all person data combined: ',dfall.shape)
-    print("dd\n", dfall)
+    # print("dd\n", dfall)
     #select only unique entries
     dfu=dfall.drop_duplicates(keep='first')
     print('Size of unique person data: ',dfu.shape)
