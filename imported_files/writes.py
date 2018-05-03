@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import get_engine, get_engine_for_oracle
 from person import person_table,replace_name_id
 
 
@@ -19,14 +19,20 @@ print('Size of the "writes" table after import: ', df.shape)
 
 #get the definition of the language table
 print('Get the person name-id relation...')
-dfp=person_table()
+#dfp=person_table()
+dfp=pd.read_csv('PERSON.csv')
+
+#df=df.iloc[0:10]
 
 #replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
 df['FullName']=df['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
 #df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
 df=df.sort_values(by=['FullName'],ascending=True) #sort the values by name to make replace work
-df['FullName']=replace_name_id(df['FullName'],dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
+df=df.reset_index(drop=True) #must reset index after sorting!!!
+namelist=dfp['FULLNAME'].tolist()
+idlist=dfp['PERSON_ID'].tolist()
+df['FullName']=replace_name_id(df['FullName'],namelist,idlist)
 
 print('Split entries with multi-clip data...')
 dfsplit=pd.concat([pd.Series(row['FullName'],
@@ -59,7 +65,8 @@ print('Maximum length of role is ',maxlenr)
 print('Maximum length of additional info is ',maxlena)
 
 #create engine and connect
-engine=get_engine()
+engine=get_engine_for_oracle()
 engine.connect()
 #insert data into the DB
 dfsplit.to_sql('WRITES', engine, if_exists='append',index=False)
+dfsplit.to_csv('WRITES.csv',index=False)

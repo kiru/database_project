@@ -33,7 +33,7 @@ def replace_name_id(series,replace_list,value_list):
     for i in range(rows):
         for j in range(listlen-offset):
             jj=j+offset
-            if(series[i]==replace_list[jj]):
+            if(str(series[i])==str(replace_list[jj])):
                 series[i]=value_list[jj]
                 offset=j
                 break
@@ -59,15 +59,15 @@ def person_table():
     df5['Spouse']=df5['Spouse'].fillna('[]')
     dfspouse=pd.concat([pd.Series(row['FullName'],
                                   row['Spouse'].split('|')) for _, row in df5.iterrows()]).reset_index()
-
+    
     # print("AHAHSDF",dfspouse.head())
     dfspouse['index'] = dfspouse['index'].map(lambda x: x.lstrip('[').rstrip(']'))
     # print("SPOUSE\n",dfspouse['index'])
-
+    
     # Get just the name
     dfspouse['index'] = dfspouse['index'].str.replace(r"\'\?\'", r"\'unknown'")
     dfspouse['index'] = dfspouse['index'].apply(lambda x: capt(x))
-
+    
     print('Combine all persons...')
     dfall=df1['FullName'].append(df2['FullName'].append(df3['FullName'].append(df4['FullName'].append(df5['FullName']).append(dfspouse['index']))))
     print('Size of all person data combined: ',dfall.shape)
@@ -85,8 +85,8 @@ def person_table():
     
     #reset the index and put it into ClipId
     dfi=dfs.reset_index(drop=True)
-    df = pd.DataFrame(data={'PERSON_ID':dfi.index,'FULLNAME':dfs})
-    
+    df = pd.DataFrame(data={'PERSON_ID':dfi.index,'FULLNAME':dfi})
+        
     return df
 
 def main():
@@ -95,7 +95,8 @@ def main():
     engine=get_engine()
     engine.connect()
     #insert data into the DB
-#    df.iloc[0:1].to_sql('PERSON', engine, if_exists='append',index=False)
+    df.to_sql('PERSON', engine, if_exists='append',index=False)
+    df.to_csv('PERSON.csv',index=False)
 
 if __name__ == "__main__":
     main()

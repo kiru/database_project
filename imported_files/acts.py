@@ -20,14 +20,20 @@ print('Size of the "acts" table after import: ', df.shape)
 
 #get the definition of the language table
 print('Get the person name-id relation...')
-dfp=person_table()
+#dfp=person_table()
+dfp=pd.read_csv('PERSON.csv')
+
+#df=df.iloc[0:10]
 
 #replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
 df['FullName']=df['FullName'].str.encode('utf-8') #encode strings as unicode for accents etc.
 #df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(), dfp['PERSON_ID'].tolist())
 df=df.sort_values(by=['FullName'],ascending=True) #sort the values by name to make replace work
-df['FullName']=replace_name_id(df['FullName'],dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
+df=df.reset_index(drop=True) #must reset index after sorting!!!
+namelist=dfp['FULLNAME'].tolist()
+idlist=dfp['PERSON_ID'].tolist()
+df['FullName']=replace_name_id(df['FullName'],namelist,idlist)
 
 print('Split entries with multi-clip data...')
 dfsplit=pd.concat([pd.Series(row['FullName'],
@@ -65,3 +71,4 @@ engine=get_engine()
 engine.connect()
 #insert data into the DB
 dfsplit.to_sql('ACTS', engine, if_exists='append',index=False,chunksize=1000)
+dfsplit.to_csv('ACTS.csv',index=False)
