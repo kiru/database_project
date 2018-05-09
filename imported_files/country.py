@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import get_engine, get_engine_for_oracle
 
 def country_table():
     #read the data
