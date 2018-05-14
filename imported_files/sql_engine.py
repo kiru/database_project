@@ -10,6 +10,9 @@ from sqlalchemy import create_engine
 import logging
 
 
+import os
+os.environ["NLS_LANG"] = ".UTF8"
+
 # import cx_Oracle
 
 ##oracle connection
@@ -39,6 +42,17 @@ def get_engine_for_oracle():
     return engine
 
 
+def get_engine_for_oracle_own():
+    # sqlalchemy engine for connection
+    # so that we see the sql statements
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    engine = create_engine(
+        get_oracle_connection_own()
+    )
+    return engine
+
+
 def get_engine_for_oracle_localhost():
     # sqlalchemy engine for connection
     # so that we see the sql statements
@@ -63,6 +77,16 @@ def get_oracle_connection():
         hostname='diassrv2.epfl.ch',
         port='1521',
         database='orcldias',
+    )
+
+def get_oracle_connection_own():
+    oracle_connection_string = 'oracle+cx_oracle://{username}:{password}@{hostname}:{port}/{database}'
+    return oracle_connection_string.format(
+        username='db',
+        password='db',
+        hostname='db.kiru.io',
+        port='49161',
+        database='XE',
     )
 
 def chunkify(lst,n):

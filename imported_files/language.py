@@ -9,7 +9,7 @@ Created on Thu Apr 26 15:20:57 2018
 import pandas as pd
 import re
 
-from sql_engine import get_engine, get_engine_for_oracle
+from sql_engine import *
 
 
 def capt(x):
@@ -61,10 +61,10 @@ def main():
     #get table
     df=language_table()
     #create engine and connect
-    engine=get_engine()
+    engine=get_engine_for_oracle_own()
     engine.connect()
     #insert data into the DB
-    df.to_sql('LANGUAGE', engine, if_exists='append',index=False)
+    df.to_sql('LANGUAGE', engine, if_exists='append',index=False, chunksize=1)
 
 if __name__ == "__main__":
     main()

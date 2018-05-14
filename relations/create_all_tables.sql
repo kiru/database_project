@@ -1,7 +1,7 @@
 CREATE TABLE Person
 (
   person_id INTEGER,
-  fullname  CHAR(20),
+  fullname  VARCHAR(1024),
   PRIMARY KEY (person_id)
 );
 

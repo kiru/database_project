@@ -95,7 +95,7 @@ def main():
     engine=get_engine()
     engine.connect()
     #insert data into the DB
-    df.to_sql('PERSON', engine, if_exists='append',index=False)
+    df.to_sql('PERSON', engine, if_exists='append',index=False, chunksize=1)
     df.to_csv('PERSON.csv',index=False)
 
 if __name__ == "__main__":
