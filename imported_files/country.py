@@ -36,7 +36,6 @@ def country_table():
     return dfi
 
 def main():
-def main():
     #get table
     df=country_table()
     #create engine and connect
