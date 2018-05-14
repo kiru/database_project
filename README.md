@@ -1,5 +1,12 @@
 # Database project
 
+### TODO
+
+☐ Import all tables into Oracle
+☐ Add Insert/Delete for Clip
+☐ Add Insert/Delete for Clip
+
+
 
 ### UI
 To install ui:
@@ -10,6 +17,5 @@ To install ui:
 >
 > source env/bin/activate
 > pip install -r requirements.txt
-
 
 

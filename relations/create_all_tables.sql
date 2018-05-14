@@ -10,7 +10,7 @@ CREATE TABLE Clip
   clip_id    INTEGER,
   clip_type  CHAR(20),
   clip_year  DATE,
-  clip_title CHAR(20),
+  clip_title CHAR(1024),
   PRIMARY KEY (clip_id)
 );
 
@@ -91,7 +91,7 @@ CREATE TABLE Genre
 CREATE TABLE Language
 (
   language_id INTEGER,
-  language    CHAR(20),
+  language    CHAR(70),
   PRIMARY KEY (language_id),
   constraint ux_language unique (language)
 );
@@ -190,13 +190,14 @@ CREATE TABLE BiographicalBooks
 
 CREATE TABLE Married_to
 (
-  married_id  INTEGER NOT NULL,
-  biography_id  INTEGER NOT NULL,
-  person_id INTEGER NOT NULL,
-  date CHAR(50),
-  state CHAR(20),
-  children CHAR(20),
-  PRIMARY KEY (married_id)
+  married_id   INTEGER NOT NULL,
+  biography_id INTEGER NOT NULL,
+  person_id    INTEGER NOT NULL,
+  marrie_date  CHAR(50),
+  state        CHAR(20),
+  children     CHAR(20),
+  PRIMARY KEY (married_id),
   FOREIGN KEY (biography_id) REFERENCES Biography (biography_id),
-  FOREIGN KEY (person_id) REFERENCES Person (person_id)
+  FOREIGN KEY (person_id) REFERENCES person (person_id)
 );
+

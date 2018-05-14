@@ -25,9 +25,10 @@ df['Language']=df['Language'].replace(dfl['LANGUAGE'].tolist(),dfl['LANGUAGE_ID'
 
 #rename columns
 df.columns=['CLIP_ID','LANGUAGE_ID'] #use clip_id as genre_id here
+df.drop_duplicates(inplace=True)
 
 #create engine and connect
 engine=get_engine()
 engine.connect()
 #insert data into the DB
-df.iloc[0:1].to_sql('CLIP_LANGUAGE', engine, if_exists='append',index=False)
+df.to_sql('CLIP_LANGUAGE', engine, if_exists='append',index=False, chunksize=1)

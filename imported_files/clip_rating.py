@@ -32,4 +32,4 @@ print(dfs)
 engine=get_engine()
 engine.connect()
 #insert data into the DB
-dfs.iloc[0:1].to_sql("CLIP_RATING", engine, if_exists='append',index=False)
+dfs.to_sql("CLIP_RATING", engine, if_exists='append',index=False)

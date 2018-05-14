@@ -108,3 +108,6 @@ venv.bak/
 .mypy_cache/
 
 imported_files/database.db
+ingored/
+
+ALTER TABLE CLIP MODIFY CLIP_TITLE CHAR(1024) DEFAULT NULL;
