@@ -8,9 +8,9 @@ CREATE TABLE Person
 CREATE TABLE Clip
 (
   clip_id    INTEGER,
-  clip_type  CHAR(20),
+  clip_type  VARCHAR(20),
   clip_year  DATE,
-  clip_title CHAR(1024),
+  clip_title VARCHAR(1024),
   PRIMARY KEY (clip_id)
 );
 
@@ -18,8 +18,8 @@ CREATE TABLE Directs
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info CHAR(200),
-  role            CHAR(20),
+  additional_info VARCHAR(200),
+  role            VARCHAR(20),
   PRIMARY KEY (person_id, clip_id),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
@@ -29,9 +29,9 @@ CREATE TABLE Acts
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info CHAR(200),
-  orders_credit   CHAR(20),
-  character       CHAR(20),
+  additional_info VARCHAR(200),
+  orders_credit   VARCHAR(20),
+  character       VARCHAR(20),
   PRIMARY KEY (person_id, clip_id, character),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
@@ -41,8 +41,8 @@ CREATE TABLE Produces
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info CHAR(200),
-  role            CHAR(20),
+  additional_info VARCHAR(200),
+  role            VARCHAR(20),
   PRIMARY KEY (person_id, clip_id),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
@@ -52,9 +52,9 @@ CREATE TABLE Writes
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info CHAR(200),
-  work_type       CHAR(20),
-  role            CHAR(200),
+  additional_info VARCHAR(200),
+  work_type       VARCHAR(20),
+  role            VARCHAR(200),
   PRIMARY KEY (person_id, clip_id),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
@@ -66,7 +66,7 @@ CREATE TABLE ClipLinks
   cliplink_id  INTEGER,
   clip_from_id INTEGER,
   clip_to_id   INTEGER,
-  link_type    CHAR(255),
+  link_type    VARCHAR(255),
   PRIMARY KEY (cliplink_id),
   FOREIGN KEY (clip_from_id) REFERENCES Clip (clip_id),
   FOREIGN KEY (clip_to_id) REFERENCES Clip (clip_id)
@@ -75,7 +75,7 @@ CREATE TABLE ClipLinks
 CREATE TABLE Country
 (
   country_id  INTEGER,
-  countryname CHAR(100),
+  countryname VARCHAR(100),
   PRIMARY KEY (country_id),
   constraint ux_country unique (countryname)
 );
@@ -83,7 +83,7 @@ CREATE TABLE Country
 CREATE TABLE Genre
 (
   genre_id INTEGER,
-  genre    CHAR(20),
+  genre    VARCHAR(20),
   PRIMARY KEY (genre_id),
   constraint ux_genre unique (genre)
 );
@@ -91,7 +91,7 @@ CREATE TABLE Genre
 CREATE TABLE Language
 (
   language_id INTEGER,
-  language    CHAR(70),
+  language    VARCHAR(70),
   PRIMARY KEY (language_id),
   constraint ux_language unique (language)
 );
@@ -157,22 +157,22 @@ CREATE TABLE Runs
 CREATE TABLE Biography
 (
   biography_id      INTEGER,
-  name              CHAR(20),
-  realname          CHAR(20),
-  nickname          CHAR(20),
+  name              VARCHAR(20),
+  realname          VARCHAR(20),
+  nickname          VARCHAR(20),
   birth_date        DATE,
-  birth_place       CHAR(20),
-  height            CHAR(20),
-  biography         CHAR(400),
-  biographer        CHAR(20),
+  birth_place       VARCHAR(20),
+  height            VARCHAR(20),
+  biography         VARCHAR(400),
+  biographer        VARCHAR(20),
   death_date        DATE,
-  death_place       CHAR(20),
-  trivia            CHAR(200),
-  biographicalbooks CHAR(100),
-  personalquotes    CHAR(200),
-  salary            CHAR(20),
-  trademark         CHAR(20),
-  wherenow          CHAR(200),
+  death_place       VARCHAR(20),
+  trivia            VARCHAR(200),
+  biographicalbooks VARCHAR(100),
+  personalquotes    VARCHAR(200),
+  salary            VARCHAR(20),
+  trademark         VARCHAR(20),
+  wherenow          VARCHAR(200),
   person_id         INTEGER NOT NULL,
   FOREIGN KEY (person_id) REFERENCES Person (person_id)
     ON DELETE CASCADE,
@@ -182,7 +182,7 @@ CREATE TABLE Biography
 CREATE TABLE BiographicalBooks
 (
   book_id      INTEGER,
-  title        CHAR(100),
+  title        VARCHAR(100),
   biography_id INTEGER NOT NULL,
   FOREIGN KEY (biography_id) REFERENCES Biography (biography_id),
   PRIMARY KEY (book_id)
@@ -193,9 +193,9 @@ CREATE TABLE Married_to
   married_id   INTEGER NOT NULL,
   biography_id INTEGER NOT NULL,
   person_id    INTEGER NOT NULL,
-  marrie_date  CHAR(50),
-  state        CHAR(20),
-  children     CHAR(20),
+  marrie_date  VARCHAR(50),
+  state        VARCHAR(20),
+  children     VARCHAR(20),
   PRIMARY KEY (married_id),
   FOREIGN KEY (biography_id) REFERENCES Biography (biography_id),
   FOREIGN KEY (person_id) REFERENCES person (person_id)
