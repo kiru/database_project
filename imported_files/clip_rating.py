@@ -28,8 +28,10 @@ dfs.columns=['CLIP_ID','VOTES','RANK']
 dfs['RATING_ID']=dfs.index
 print(dfs)
 
+dfs.drop_duplicates(inplace=True)
+
 #create engine and connect
 engine=get_engine()
 engine.connect()
 #insert data into the DB
-dfs.to_sql("CLIP_RATING", engine, if_exists='append',index=False)
+dfs.to_sql("CLIP_RATING", engine, if_exists='append',index=False, chunksize=1)
