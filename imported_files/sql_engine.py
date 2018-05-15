@@ -23,7 +23,7 @@ os.environ["NLS_LANG"] = ".UTF8"
 # db = cx_Oracle.connect('DB2018_G17', 'DB2018_G17', dsn_tns)
 
 def get_engine():
-    return get_engine_for_oracle_localhost()
+    return get_engine_for_oracle_own()
 
 def get_engine_sql_lite():
     # sqlalchemy engine for connection
