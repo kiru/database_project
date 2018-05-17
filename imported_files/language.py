@@ -61,7 +61,7 @@ def main():
     #get table
     df=language_table()
     #create engine and connect
-    engine=get_engine_for_oracle_own()
+    engine=get_engine()
     engine.connect()
     #insert data into the DB
     df.to_sql('LANGUAGE', engine, if_exists='append',index=False, chunksize=1)

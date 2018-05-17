@@ -23,12 +23,10 @@ os.environ["NLS_LANG"] = ".UTF8"
 # db = cx_Oracle.connect('DB2018_G17', 'DB2018_G17', dsn_tns)
 
 def get_engine():
-    return get_engine_for_oracle_own()
+    return get_psql()
 
-def get_engine_sql_lite():
-    # sqlalchemy engine for connection
-    engine = create_engine('sqlite:///database.db');
-    return engine
+def get_psql():
+    return create_engine('postgresql://db:db@db.kiru.io/db')
 
 
 def get_engine_for_oracle():
