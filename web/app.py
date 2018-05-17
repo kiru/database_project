@@ -99,17 +99,9 @@ def createEngine():
     return engine
 
 def createEngineOracle():
-    oracle_connection_string = 'oracle+cx_oracle://{username}:{password}@{hostname}:{port}/{database}'
-    engine = create_engine(oracle_connection_string.format(
-        username='DB2018_G17',
-        password='DB2018_G17',
-        hostname='diassrv2.epfl.ch',
-        port='1521',
-        database='orcldias',
-    ))
+    engine = create_engine('postgresql://db:db@db.kiru.io/db')
     engine.connect()
     return engine
-
 
 if __name__ == '__main__':
     app.run(debug=True)
