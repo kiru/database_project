@@ -11,10 +11,6 @@ import pandas as pd
 from sql_engine import *
 from person import person_table, replace_name_id
 
-def replace(x, name_to_id):
-    print("Kiru was here", x, name_to_id.get(x))
-    return x
-
 def main():
     # read the data
     path = '../../../data/db2018imdb/directors.csv'
@@ -29,20 +25,11 @@ def main():
     # df=df.iloc[0:10]
 
     # replace all language strings with the corresponding id (EXPENSIVE)
-    print('Replace person name with id...')
+    print("start replacing person name with id.")
 
-    # df['FullName'] = df['FullName'].str.encode('utf-8')  # encode strings as unicode for accents etc.
-    # df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
-    # df = df.sort_values(by=['FullName'], ascending=True)  # sort the values by name to make replace work
-    # df = df.reset_index(drop=True)  # must reset index after sorting!!!
-    
     nameSeries = pd.Series(dfp['PERSON_ID'].values, index=dfp['FULLNAME'])
-    name_to_id = nameSeries.to_dict()
-    print("Name series \n\n", nameSeries.head);
-    
-    print("done replacing person name with id: \n\n", df.head)
     df['FullName'] = df['FullName'].map(nameSeries)
-    print("done replacing person name with id: \n\n", df.head)
+    print("done replacing person name with id")
 
     print('Split entries with multi-clip data...')
     dfsplit = pd.concat([pd.Series(row['FullName'],
@@ -70,10 +57,12 @@ def main():
     maxlena = alengths.sort_values(ascending=False).iloc[0]
     print('Maximum length of role is ', maxlenr)
     print('Maximum length of additional info is ', maxlena)
-    
+
+    # rename columns
+    dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
     print('Final data: \n\n', df.head)
-    
-    import_into_db(df, 'directs');
+
+    import_into_db(dfsplit, 'directs');
 
 if __name__ == "__main__":
     main()

@@ -11,22 +11,15 @@ from joblib import Parallel, delayed
 import pandas as pd
 import sys
 
-from sql_engine import get_engine, get_engine_for_oracle, chunkify
+from sql_engine import *
+
 
 
 def main():
     # get table
-    df = pd.read_csv(sys.argv[1])
-
-    # create engine and connect
-    engine = get_engine()
-    engine.connect()
-
-    # insert data into the DB
-    print('The final data shape is: ', df.shape)
-
-    print('insert into database')
-    df.to_sql(sys.argv[2], engine, if_exists='append', index=False, chunksize=1)
+    csv = '../csv/%s.csv' % sys.argv[1]
+    df = pd.read_csv('PERSON.csv', encoding='utf-8')
+    import_csv(csv, df, sys.argv[1])
 
 
 if __name__ == "__main__":
