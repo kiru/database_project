@@ -8,7 +8,8 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine, get_engine_for_oracle
+
+from sql_engine import *
 
 
 def genre_table():
@@ -40,12 +41,9 @@ def genre_table():
 def main():
     # get table
     df = genre_table()
-    # create engine and connect
-    engine = get_engine()
-    engine.connect()
-    # insert data into the DB
-    df.to_sql("GENRE", engine, if_exists='append', index=False)
 
+    #df.to_sql("GENRE", engine, if_exists='append', index=False)
+    import_into_db(df, 'genre')
 
 if __name__ == "__main__":
     main()

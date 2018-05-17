@@ -13,9 +13,15 @@ To install ui:
 
 1. go to web folder
 2. create new virtual environment
-> virtualenv venv
+> virtualenv -p python3 env
 >
 > source env/bin/activate
-> pip install -r requirements.txt
+
+> pip install flask
+
+> pip install sqlalchemy
+
+
+
 
 

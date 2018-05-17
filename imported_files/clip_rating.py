@@ -7,7 +7,7 @@ This is a temporary script file.
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 
 rating_path = '../../../data/db2018imdb/ratings.csv'
 df = pd.read_csv(rating_path)
@@ -29,8 +29,7 @@ print(dfs)
 
 dfs.drop_duplicates(inplace=True)
 
-# create engine and connect
-engine = get_engine()
-engine.connect()
 # insert data into the DB
-dfs.to_sql("CLIP_RATING", engine, if_exists='append', index=False, chunksize=1)
+import_into_db(dfs, 'clip_rating')
+
+

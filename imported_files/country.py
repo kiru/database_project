@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 
 
 def country_table():
@@ -40,11 +40,7 @@ def country_table():
 def main():
     # get table
     df = country_table()
-    # create engine and connect
-    engine = get_engine()
-    engine.connect()
-    # insert data into the DB
-    df.to_sql('COUNTRY', engine, if_exists='append', index=False)
+    import_into_db(df, 'country')
 
 
 if __name__ == "__main__":

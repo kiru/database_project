@@ -10,7 +10,7 @@ from joblib import Parallel, delayed
 
 import pandas as pd
 
-from sql_engine import get_engine, get_engine_for_oracle, chunkify
+from sql_engine import *
 
 
 def doStuff(date):
@@ -59,9 +59,11 @@ def clip_table():
     maxlen = lengths.sort_values(ascending=False).iloc[0]
     print('Maximum length of title is ', maxlen)
     # YEAR:
+
     print('Amount of NaNs in ClipYear: ', df[df['ClipYear'].isnull()].shape)
     df_year = df.drop_duplicates(subset=['ClipYear'], keep='first')
     df_ys = df_year.sort_values(by=['ClipYear'], ascending=False)
+
     # covers 1888-2016, contains NaN: print(df_ys['ClipYear'])
     # TYPE:
     print('Amount of NaNs in ClipType: ', df[df['ClipType'].isnull()].shape)
@@ -91,15 +93,10 @@ def processInput(chunk):
 def main():
     # get table
     df = clip_table()
-    # create engine and connect
-    engine = get_engine()
-    engine.connect()
+
     # insert data into the DB
     print('The final data shape is: ', df.shape)
-    # print('insert into database')
-    # df.to_sql('CLIP', engine, if_exists='append', index=False, chunksize=1)
-    df.to_csv(path_or_buf='../csv/clip.csv', index=False, encoding='utf-8')
-    # results = Parallel(n_jobs=9)(delayed(processInput)(chunk) for chunk in chunkify(df, 10000))
+    import_into_db(df, 'clip')
 
 
 if __name__ == "__main__":
