@@ -7,11 +7,11 @@ python3 language.py
 python3 genre.py
 
 python3 clip.py
-#python3 clip_rating.py
-#python3 clip_language.py
-#python3 clip_country.py
-#python3 clip_genre.py
-#python3 clip_links.py
+python3 clip_rating.py
+python3 clip_language.py
+python3 clip_country.py
+python3 clip_genre.py
+python3 clip_links.py
 
 #python3 person.py
 #python3 biography.py
