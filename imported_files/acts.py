@@ -41,9 +41,9 @@ dfsplit.columns = ['CLIP_ID', 'CHARACTER', 'ORDERS_CREDIT', 'ADDITIONAL_INFO', '
 
 print('Remove []-characters...')
 dfsplit['CLIP_ID'] = dfsplit['CLIP_ID'].map(lambda x: x.lstrip('[').rstrip(']'))
-dfsplit['CHARACTER'] = dfsplit['CHARACTER'].map(lambda x: x.lstrip('[').rstrip(']')).str.encode('utf-8')
+dfsplit['CHARACTER'] = dfsplit['CHARACTER'].map(lambda x: x.lstrip('[').rstrip(']'))
 dfsplit['ORDERS_CREDIT'] = dfsplit['ORDERS_CREDIT'].map(lambda x: x.lstrip('[').rstrip(']'))
-dfsplit['ADDITIONAL_INFO'] = dfsplit['ADDITIONAL_INFO'].map(lambda x: x.lstrip('[').rstrip(']')).str.encode('utf-8')
+dfsplit['ADDITIONAL_INFO'] = dfsplit['ADDITIONAL_INFO'].map(lambda x: x.lstrip('[').rstrip(']'))
 
 # convert the integers to numbers
 pd.to_numeric(dfsplit['CLIP_ID'], errors='coerce', downcast='integer')
@@ -61,5 +61,7 @@ print('Maximum length of character is ', maxlenc)
 print('Maximum length of additional info is ', maxlena)
 
 dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
+dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'CHARACTER'])
+
 
 import_into_db(dfsplit, 'acts')

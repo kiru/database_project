@@ -4,6 +4,7 @@ CREATE TABLE Person
   fullname  VARCHAR(1024),
   PRIMARY KEY (person_id)
 );
+create index ix_person on person(fullname);
 
 CREATE TABLE Clip
 (
@@ -18,9 +19,9 @@ CREATE TABLE Directs
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info VARCHAR(200),
-  role            VARCHAR(20),
-  PRIMARY KEY (person_id, clip_id),
+  additional_info VARCHAR(1024),
+  role            VARCHAR(1024),
+  PRIMARY KEY (person_id, clip_id, role),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
 );
@@ -29,9 +30,9 @@ CREATE TABLE Acts
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info VARCHAR(200),
+  additional_info VARCHAR(1024),
   orders_credit   VARCHAR(20),
-  character       VARCHAR(20),
+  character       VARCHAR(1024),
   PRIMARY KEY (person_id, clip_id, character),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
@@ -42,8 +43,8 @@ CREATE TABLE Produces
   person_id       INTEGER,
   clip_id         INTEGER,
   additional_info VARCHAR(200),
-  role            VARCHAR(20),
-  PRIMARY KEY (person_id, clip_id),
+  role            VARCHAR(200),
+  PRIMARY KEY (person_id, clip_id, role),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
 );
@@ -55,7 +56,7 @@ CREATE TABLE Writes
   additional_info VARCHAR(200),
   work_type       VARCHAR(20),
   role            VARCHAR(200),
-  PRIMARY KEY (person_id, clip_id),
+  PRIMARY KEY (person_id, clip_id, role),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
 );

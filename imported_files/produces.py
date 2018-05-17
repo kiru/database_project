@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 from person import person_table, replace_name_id
 
 # read the data
@@ -25,13 +25,9 @@ dfp = pd.read_csv('PERSON.csv')
 
 # replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
-df['FullName'] = df['FullName'].str.encode('utf-8')  # encode strings as unicode for accents etc.
-# df['FullName']=df['FullName'].replace(df['FULLNAME'].tolist(),df['PERSON_ID'].tolist())
-df = df.sort_values(by=['FullName'], ascending=True)  # sort the values by name to make replace work
-df = df.reset_index(drop=True)  # must reset index after sorting!!!
-namelist = dfp['FULLNAME'].tolist()
-idlist = dfp['PERSON_ID'].tolist()
-df['FullName'] = replace_name_id(df['FullName'], namelist, idlist)
+
+nameSeries = pd.Series(dfp['PERSON_ID'].values, index=dfp['FULLNAME'])
+df['FullName'] = df['FullName'].map(nameSeries)
 
 print('Split entries with multi-clip data...')
 dfsplit = pd.concat([pd.Series(row['FullName'],
@@ -62,5 +58,4 @@ print('Maximum length of additional info is ', maxlena)
 engine = get_engine()
 engine.connect()
 # insert data into the DB
-dfsplit.to_sql('PRODUCES', engine, if_exists='append', index=False)
-dfsplit.to_csv('PRODUCES.csv', index=False)
+import_into_db(dfsplit, 'produces')
