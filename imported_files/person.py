@@ -81,7 +81,7 @@ def person_table():
     print('Size of unique person data: ', dfu.shape)
 
     # sort relation, encode as utf-8, find longest string
-    dfu = dfu.str.encode('utf-8')
+    #dfu = dfu.str.encode('utf-8')
     dfs = dfu.sort_values(ascending=True)
     lengths = dfs.str.len()
     maxlen = lengths.sort_values(ascending=False).iloc[0]
@@ -96,7 +96,7 @@ def person_table():
 
 def main():
     df = person_table()
-    df.to_csv('PERSON.csv', index=False)
+    df.to_csv('PERSON.csv', index=False, encoding='utf-8')
     import_into_db(df, 'person');
 
 
