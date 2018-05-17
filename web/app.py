@@ -33,6 +33,18 @@ def search_result(table):
         column_name = 'language'
         search_query(engine, input, names, 'select * from Language where lower(language) like :search', column_name,
                        "Language")
+    elif table == 'Person':
+        column_name = 'fullname'
+        search_query(engine, input, names, 'select * from Person where lower(fullname) like :search', column_name,
+                       "Person")
+    elif table == 'Actor':
+        column_name = 'fullname'
+        search_query(engine, input, names, 'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search)', column_name,
+                       "Actor")
+    elif table == 'Clip':
+        column_name = 'clip_title'
+        search_query(engine, input, names, 'select * from Clip where lower(clip_title) like :search', column_name,
+                       "Clip")
 
     return render_template('search-result.html', tables=names, query=input, table_name = table)
 
@@ -52,6 +64,9 @@ def search():
 
     search_country(engine, input, names, 'select count(*) from Country where lower(COUNTRYNAME) like :search')
     search_country(engine, input, names, 'select count(*) from Language where lower(language) like :search', "Language")
+    search_country(engine, input, names, 'select count(*) from Clip where lower(clip_title) like :search', "Clip")
+    search_country(engine, input, names, 'select count(*) from person where lower(fullname) like :search', "Person")
+    search_country(engine, input, names, 'select count(*) from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search)', "Actor")
 
     return render_template('search.html', tables=names, query=input)
 
