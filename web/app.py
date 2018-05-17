@@ -24,8 +24,23 @@ def search_result(table):
     input = request.args.get('query')
     engine = createEngine()
 
+
     names = []
-    return render_template('search-result.html', tables=names, query=input)
+    if table == 'Country':
+        column_name = 'countryname'
+        search_query(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search', column_name)
+    elif table == 'Language':
+        column_name = 'language'
+        search_query(engine, input, names, 'select * from Language where lower(language) like :search', column_name,
+                       "Language")
+
+    return render_template('search-result.html', tables=names, query=input, table_name = table)
+
+def search_query(engine, input, names, search, column, country="Country"):
+    sql = text(search)
+    result = engine.execute(sql, search="%{}%".format(input).lower())
+    for row in result:
+        names.append(row[column])
 
 
 @app.route('/search/')
@@ -95,10 +110,6 @@ def insert():
     return render_template('insert-delete.html')
 
 def createEngine():
-    engine = create_engine('sqlite:///../imported_files/database.db');
-    return engine
-
-def createEngineOracle():
     engine = create_engine('postgresql://db:db@db.kiru.io/db')
     engine.connect()
     return engine
