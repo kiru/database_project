@@ -48,7 +48,10 @@ def clip_table():
     #TITLE:
     #We accept all forms of titles except NaNs, but there are no
     print('Amount of NaNs in ClipTitle: ',df[df['ClipTitle'].isnull()].shape)
-    df['ClipTitle']=df['ClipTitle'].str.encode('utf-8') #encode strings as unicode for accents etc.
+
+    #df['ClipTitle'] = df['ClipTitle'].str.encode('utf-8')  # encode strings as unicode for accents etc.
+    #df['ClipTitle'] = df['ClipTitle'].apply(lambda s: s.decode('utf-8'))
+
     lengths=df['ClipTitle'].str.len()
     maxlen=lengths.sort_values(ascending=False).iloc[0]
     print('Maximum length of title is ',maxlen)
@@ -91,8 +94,8 @@ def main():
     print('The final data shape is: ',df.shape)
     #print('insert into database')
     #df.to_sql('CLIP', engine, if_exists='append', index=False, chunksize=1)
-    #df.to_csv(path_or_buf='csv/clip.csv', index=False)
-    results = Parallel(n_jobs=9)(delayed(processInput)(chunk) for chunk in chunkify(df, 10000))
+    df.to_csv(path_or_buf='../csv/clip.csv', index=False,  encoding='utf-8')
+    #results = Parallel(n_jobs=9)(delayed(processInput)(chunk) for chunk in chunkify(df, 10000))
 
 if __name__ == "__main__":
     main()
