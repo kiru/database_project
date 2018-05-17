@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 from person import person_table, replace_name_id
 
 # read the data
@@ -58,9 +58,4 @@ maxlena = alengths.sort_values(ascending=False).iloc[0]
 print('Maximum length of role is ', maxlenr)
 print('Maximum length of additional info is ', maxlena)
 
-# create engine and connect
-engine = get_engine()
-engine.connect()
-# insert data into the DB
-dfsplit.to_sql('DIRECTS', engine, if_exists='append', index=False)
-dfsplit.to_csv('DIRECTS.csv', index=False)
+import_into_db(df, 'directs');

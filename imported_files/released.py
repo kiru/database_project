@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 from country import country_table
 
 # read the data
@@ -33,8 +33,4 @@ for row in range(rows):
     df['RELEASE_DATE'][row] = pd.to_datetime(df['RELEASE_DATE'][row], format='%B %Y', errors='ignore')
     df['RELEASE_DATE'][row] = pd.to_datetime(df['RELEASE_DATE'][row], format='%Y', errors='coerce')
 
-# create engine and connect
-engine = get_engine()
-engine.connect()
-# insert data into the DB
-df.iloc[0:1].to_sql('RELEASED', engine, if_exists='append', index=False)
+import_into_db(df, 'released')

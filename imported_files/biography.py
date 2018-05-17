@@ -41,8 +41,7 @@ def biography_table(spouse=False):
         df['BIRTH_DATE'] = df['DateAndPlaceOfBirth']
         (rows, columns) = df.shape
         for row in range(rows):
-            df['BIRTH_DATE'][row] = pd.to_datetime(df['BIRTH_DATE'][row], format='%d %B %Y', errors='ignore',
-                                                   exact=False)
+            df['BIRTH_DATE'][row] = pd.to_datetime(df['BIRTH_DATE'][row], format='%d %B %Y', errors='ignore', exact=False)
             df['BIRTH_DATE'][row] = pd.to_datetime(df['BIRTH_DATE'][row], format='%B %Y', errors='ignore', exact=False)
             df['BIRTH_DATE'][row] = pd.to_datetime(df['BIRTH_DATE'][row], format='%Y', errors='coerce', exact=False)
         # remove date from place of birth

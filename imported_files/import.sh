@@ -22,5 +22,5 @@ python3 person.py
 
 #python3 biography.py
 #python3 released.py
-#python3 runs.py
+python3 runs.py
 

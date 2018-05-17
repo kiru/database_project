@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 from country import country_table
 
 # read the data
@@ -28,8 +28,12 @@ df.columns = ['CLIP_ID', 'COUNTRY_ID', 'RUNNING_TIME']
 df['COUNTRY_ID'] = pd.to_numeric(df['COUNTRY_ID'], errors='coerce')
 df['RUNNING_TIME'] = pd.to_numeric(df['RUNNING_TIME'], errors='coerce')
 
+df.drop_duplicates(inplace=True, subset=['COUNTRY_ID', 'CLIP_ID'])
+df.dropna(subset=['COUNTRY_ID'], inplace=True)
+
+# Convert to number
+pd.to_numeric(df['COUNTRY_ID'], errors='coerce', downcast='integer')
+df['COUNTRY_ID'] = df['COUNTRY_ID'].astype(int)
+
 # create engine and connect
-engine = get_engine()
-engine.connect()
-# insert data into the DB
-df.iloc[0:1].to_sql('RUNS', engine, if_exists='append', index=False)
+import_into_db(df, 'runs')
