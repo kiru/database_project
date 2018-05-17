@@ -18,7 +18,7 @@ from sql_engine import *
 def main():
     # get table
     csv = '../csv/%s.csv' % sys.argv[1]
-    df = pd.read_csv('PERSON.csv', encoding='utf-8')
+    df = pd.read_csv(csv, encoding='utf-8')
     import_csv(csv, df, sys.argv[1])
 
 
