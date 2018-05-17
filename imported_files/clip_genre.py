@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine
+from sql_engine import *
 from genre import genre_table
 
 # read the data
@@ -27,7 +27,4 @@ df['Genre'] = df['Genre'].replace(dfl['GENRE'].tolist(), dfl['GENRE_ID'].tolist(
 df.columns = ['CLIP_ID', 'GENRE_ID']  # use clip_id as genre_id here
 
 # create engine and connect
-engine = get_engine()
-engine.connect()
-# insert data into the DB
-df.to_sql('CLIP_GENRE', engine, if_exists='append', index=False)
+import_into_db(df, 'clip_genre')

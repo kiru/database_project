@@ -25,7 +25,9 @@ def main():
     # rename columns
     df.columns = ['CLIP_ID', 'COUNTRY_ID']
     df.drop_duplicates(inplace=True)
-    import_into_db(df, 'clip');
+
+    print('The final data shape is: \n', df.head())
+    import_into_db(df, 'clip_country');
 
 if __name__ == "__main__":
     main()

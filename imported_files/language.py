@@ -37,7 +37,7 @@ def language_table():
 
     dfu['Language'] = dfu.Language.str.lower()
     dfu['Language'] = dfu['Language'].astype('str')
-    dfu['Language'] = dfu['Language'].apply(capt).str.encode('utf-8')
+    #dfu['Language'] = dfu['Language'].apply(capt).str.encode('utf-8')
 
     languages = pd.Series(sorted(dfu.Language.unique()))
     # dfu['Language']=dfu['Language'].str.encode('utf-8') #encode strings as unicode for accents etc.

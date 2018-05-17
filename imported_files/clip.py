@@ -13,7 +13,7 @@ import pandas as pd
 from sql_engine import *
 
 
-def doStuff(date):
+def do_date(date):
     print(date)
     if (pd.isnull(date)):
         return date
@@ -27,7 +27,7 @@ def lookup(s):
     re-parse these, we store all unique dates, parse them, and
     use a lookup to convert all dates.
     """
-    dates = {date: doStuff(date) for date in s.unique()}
+    dates = {date: do_date(date) for date in s.unique()}
     return s.map(dates)
 
 
