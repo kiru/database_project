@@ -8,7 +8,7 @@ Created on Thu Apr 26 15:20:57 2018
 
 import pandas as pd
 
-from sql_engine import get_engine, get_engine_for_oracle
+from sql_engine import *
 from person import person_table, replace_name_id
 
 # read the data
@@ -63,9 +63,4 @@ print('Maximum length of work type is ', maxlenwt)
 print('Maximum length of role is ', maxlenr)
 print('Maximum length of additional info is ', maxlena)
 
-# create engine and connect
-engine = get_engine_for_oracle()
-engine.connect()
-# insert data into the DB
-dfsplit.to_sql('WRITES', engine, if_exists='append', index=False)
-dfsplit.to_csv('WRITES.csv', index=False)
+import_into_db(df, 'writes')
