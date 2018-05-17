@@ -39,8 +39,7 @@
     </div>
 
      {% if tables and query %}
-         {% if table_name == 'Country' %}
-        <h2>Found results for Country: </h2>
+        <h2>Found results for {{ table_name }}: </h2>
          <div>
             <table class="table table-condensed ">
                 <thead>
@@ -60,30 +59,6 @@
                  </tbody>
             </table>
         </div>
-        {% endif %}
-
-         {% if table_name == 'Language' %}
-        <h2>Found results for Language: </h2>
-         <div>
-            <table class="table table-condensed ">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {%  for table in tables %}
-                    <tr>
-                            <th scope="row">
-                                <span>{{ table }}</span>
-                            </th>
-
-                    </tr>
-                {% endfor %}
-                 </tbody>
-            </table>
-        </div>
-        {% endif %}
 
      {% endif %}
 
