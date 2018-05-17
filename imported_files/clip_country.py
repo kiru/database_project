@@ -12,27 +12,29 @@ from joblib import Parallel, delayed
 from sql_engine import get_engine, chunkify
 from country import country_table
 
+
 def processInput(chunk):
-    engine=get_engine()
+    engine = get_engine()
     engine.connect()
     print("Insert next chunk")
-    chunk.to_sql('CLIP_COUNTRY', engine, if_exists='append',index=False, chunksize=1)
+    chunk.to_sql('CLIP_COUNTRY', engine, if_exists='append', index=False, chunksize=1)
     engine.dispose()
     return chunk
 
+
 def main():
-    #read the data
-    path='../../../data/db2018imdb/countries.csv'
+    # read the data
+    path = '../../../data/db2018imdb/countries.csv'
     df = pd.read_csv(path)
 
-    #get the definition of the country table
-    dfl=country_table()
+    # get the definition of the country table
+    dfl = country_table()
 
-    #replace all country strings with the corresponding id (EXPENSIVE)
-    df['CountryName']=df['CountryName'].replace(dfl['COUNTRYNAME'].tolist(),dfl['COUNTRY_ID'].tolist())
+    # replace all country strings with the corresponding id (EXPENSIVE)
+    df['CountryName'] = df['CountryName'].replace(dfl['COUNTRYNAME'].tolist(), dfl['COUNTRY_ID'].tolist())
 
-    #rename columns
-    df.columns=['CLIP_ID','COUNTRY_ID']
+    # rename columns
+    df.columns = ['CLIP_ID', 'COUNTRY_ID']
     df.drop_duplicates(inplace=True)
 
     print('Import')
@@ -41,5 +43,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-

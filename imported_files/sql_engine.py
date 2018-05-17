@@ -9,9 +9,10 @@ Created on Thu Apr 26 15:20:57 2018
 from sqlalchemy import create_engine
 import logging
 
-
 import os
+
 os.environ["NLS_LANG"] = ".UTF8"
+
 
 # import cx_Oracle
 
@@ -24,6 +25,7 @@ os.environ["NLS_LANG"] = ".UTF8"
 
 def get_engine():
     return get_psql()
+
 
 def get_psql():
     return create_engine('postgresql://db:db@db.kiru.io/db')
@@ -77,6 +79,7 @@ def get_oracle_connection():
         database='orcldias',
     )
 
+
 def get_oracle_connection_own():
     oracle_connection_string = 'oracle+cx_oracle://{username}:{password}@{hostname}:{port}/{database}'
     return oracle_connection_string.format(
@@ -87,6 +90,6 @@ def get_oracle_connection_own():
         database='XE',
     )
 
-def chunkify(lst,n):
-    return [ lst[i::n] for i in range(n) ]
 
+def chunkify(lst, n):
+    return [lst[i::n] for i in range(n)]
