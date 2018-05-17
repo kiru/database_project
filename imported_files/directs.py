@@ -60,6 +60,7 @@ def main():
 
     # rename columns
     dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
+    dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'ROLE'])
     print('Final data: \n\n', df.head)
 
     import_into_db(dfsplit, 'directs');
