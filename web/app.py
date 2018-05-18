@@ -28,35 +28,35 @@ def search_result(table):
     names = []
     if table == 'Country':
         column_name = 'countryname'
-        search_query(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search', column_name)
+        search_query(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 200', column_name)
     elif table == 'Language':
         column_name = 'language'
-        search_query(engine, input, names, 'select * from Language where lower(language) like :search', column_name,
+        search_query(engine, input, names, 'select * from Language where lower(language) like :search limit 200', column_name,
                        "Language")
     elif table == 'Person':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from Person where lower(fullname) like :search', column_name,
+        search_query(engine, input, names, 'select * from Person where lower(fullname) like :search limit 200', column_name,
                        "Person")
     elif table == 'Actor':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search)', column_name,
+        search_query(engine, input, names, 'select DISTINCT person.fullname from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
                        "Actor")
     elif table == 'Clip':
         column_name = 'clip_title'
-        search_query(engine, input, names, 'select * from Clip where lower(clip_title) like :search', column_name,
+        search_query(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 200', column_name,
                        "Clip")
 
     elif table == 'Writer':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search)', column_name,
+        search_query(engine, input, names, 'select DISTINCT person.fullname from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
                        "Writer")
     elif table == 'Director':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search)', column_name,
+        search_query(engine, input, names, 'select DISTINCT person.fullname from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
                        "Director")
     elif table == 'Producer':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search)', column_name,
+        search_query(engine, input, names, 'select DISTINCT person.fullname from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
                        "Producer")
 
     return render_template('search-result.html', tables=names, query=input, table_name = table)
