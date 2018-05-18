@@ -20,6 +20,7 @@ python3 directs.py
 #python3 produces.py
 
 #python3 biography.py
+#python3 married_to.py
 python3 released.py
 python3 runs.py
 
