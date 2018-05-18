@@ -24,14 +24,8 @@ dfp = pd.read_csv('PERSON.csv')
 # df=df.iloc[0:10]
 
 # replace all language strings with the corresponding id (EXPENSIVE)
-print('Replace person name with id...')
-df['FullName'] = df['FullName'].str.encode('utf-8')  # encode strings as unicode for accents etc.
-# df['FullName']=df['FullName'].replace(dfp['FULLNAME'].tolist(),dfp['PERSON_ID'].tolist())
-df = df.sort_values(by=['FullName'], ascending=True)  # sort the values by name to make replace work
-df = df.reset_index(drop=True)  # must reset index after sorting!!!
-namelist = dfp['FULLNAME'].tolist()
-idlist = dfp['PERSON_ID'].tolist()
-df['FullName'] = replace_name_id(df['FullName'], namelist, idlist)
+nameSeries = pd.Series(dfp['PERSON_ID'].values, index=dfp['FULLNAME'])
+df['FullName'] = df['FullName'].map(nameSeries)
 
 print('Split entries with multi-clip data...')
 dfsplit = pd.concat([pd.Series(row['FullName'],
@@ -62,5 +56,7 @@ maxlena = alengths.sort_values(ascending=False).iloc[0]
 print('Maximum length of work type is ', maxlenwt)
 print('Maximum length of role is ', maxlenr)
 print('Maximum length of additional info is ', maxlena)
+
+dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 
 import_into_db(df, 'writes')

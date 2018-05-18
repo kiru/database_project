@@ -54,8 +54,7 @@ maxlena = alengths.sort_values(ascending=False).iloc[0]
 print('Maximum length of character is ', maxlenr)
 print('Maximum length of additional info is ', maxlena)
 
+dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
+
 # create engine and connect
-engine = get_engine()
-engine.connect()
-# insert data into the DB
 import_into_db(dfsplit, 'produces')

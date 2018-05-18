@@ -40,6 +40,7 @@ print('Rename columns...')
 dfsplit.columns = ['CLIP_ID', 'CHARACTER', 'ORDERS_CREDIT', 'ADDITIONAL_INFO', 'PERSON_ID']
 
 print('Remove []-characters...')
+
 dfsplit['CLIP_ID'] = dfsplit['CLIP_ID'].map(lambda x: x.lstrip('[').rstrip(']'))
 dfsplit['CHARACTER'] = dfsplit['CHARACTER'].map(lambda x: x.lstrip('[').rstrip(']'))
 dfsplit['ORDERS_CREDIT'] = dfsplit['ORDERS_CREDIT'].map(lambda x: x.lstrip('[').rstrip(']'))
@@ -63,5 +64,7 @@ print('Maximum length of additional info is ', maxlena)
 dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'CHARACTER'])
 
+# TODO KIRU: I'm not sure if this is correct, and how many we get rid of
+dfsplit.dropna(subset=['CHARACTER'], inplace=True)
 
 import_into_db(dfsplit, 'acts')
