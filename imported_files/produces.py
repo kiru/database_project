@@ -56,5 +56,8 @@ print('Maximum length of additional info is ', maxlena)
 
 dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 
+# TODO KIRU: not sure if this is correct
+df.drop_duplicates(inplace=True, subset=['PERSON_ID' 'CLIP_ID', 'ROLE'])
+
 # create engine and connect
 import_into_db(dfsplit, 'produces')
