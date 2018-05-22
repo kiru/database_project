@@ -32,10 +32,10 @@
                     <a class="nav-link" href="/predefined/">Predefined Queries</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link active" href="/insert/">Insert <span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="/insert/">Insert</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/delete/">Delete</a>
+                 <li class="nav-item">
+                    <a class="nav-link active" href="/delete/">Delete <span class="sr-only">(current)</span></a>
                 </li>
             </ul>
         </nav>
@@ -43,44 +43,10 @@
     </div>
 
     <div>
-        <form method = "GET">
-            <h2>Add new Clip</h2>
-            <div class="form-group row">
-                <label for="example-text-input" class="col-2 col-form-label">Title</label>
-                <div class="col-10">
-                    <input class="form-control" type="text" value="" id="example-text-input" name = "title">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="example-search-input" class="col-2 col-form-label">Year</label>
-                <div class="col-10">
-                    <input class="form-control" type="search" value="" id="example-search-input" name = "year">
-                </div>
-            </div>
-            <div class="form-group row">
-                <label for="exampleSelect1" class="col-2 col-form-label">Type</label>
-                <div class="col-10">
-                    <select class="form-control" id="exampleSelect1" name = "type">
-                        <option>V</option>
-                        <option>TV</option>
-                        <option>VG</option>
-                        <option>SE</option>
-                        <option></option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group float-right">
-                <input type="submit" class="btn btn-primary" value="Save">
-            </div>
-        </form>
-    </div>
+        <h2>Choose entity: </h2>
+        <h4><a href="clip/">Clips</a></h4>
 
-    <br/>
-    {% if clip_title and clip_year and clip_type %}
-        <h2>Inserted title: {{ clip_title }}, year: {{ clip_year }}, type: {{ clip_type }}, id: {{ clip_id }}</h2>
-    {% else %}
-        <h2>Please fill all fields!</h2>
-    {% endif %}
+    </div>
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript
