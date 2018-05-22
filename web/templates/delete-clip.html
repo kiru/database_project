@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" class="gr__v4-alpha_getbootstrap_com">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="https://v4-alpha.getbootstrap.com/favicon.ico">
+
+    <title>Database Project</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css"
+          integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/custom.css"/>
+
+    <style></style>
+</head>
+
+<body data-gr-c-s-loaded="true">
+
+<div class="container">
+    <div class="header clearfix">
+        <nav>
+            <ul class="nav nav-pills float-right">
+                <li class="nav-item">
+                    <a class="nav-link" href="/search/">Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/predefined/">Predefined Queries</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/insert/">Insert </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="/delete/">Delete <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </nav>
+        <h3 class="text-muted">Database Project</h3>
+    </div>
+
+    <div>
+        <form method = "GET">
+            <h2>Delete Clip</h2>
+            <div class="form-group row">
+                <label for="example-text-input" class="col-2 col-form-label">Clip ID</label>
+                <div class="col-10">
+                    <input class="form-control" type="text" value="" id="example-text-input" name = "id">
+                </div>
+            </div>
+
+            <div class="form-group float-right">
+                <input type="submit" class="btn btn-primary" value="Save">
+            </div>
+        </form>
+    </div>
+
+    <br/>
+    {% if id %}
+        <h2>Deleted {{ deleted }} entries</h2>
+    {% else %}
+        <h2>Please fill all fields!</h2>
+    {% endif %}
+</div> <!-- /container -->
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
+        integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
+        integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
+        crossorigin="anonymous"></script>
+
+</body>
+</html>
