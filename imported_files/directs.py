@@ -22,7 +22,7 @@ def main():
     # dfp=person_table()
     dfp = pd.read_csv('PERSON.csv', encoding='utf-8')
 
-    # df=df.iloc[0:10]
+    #df=df.iloc[0:10]
 
     # replace all language strings with the corresponding id (EXPENSIVE)
     print("start replacing person name with id.")
@@ -32,13 +32,25 @@ def main():
     print("done replacing person name with id")
 
     print('Split entries with multi-clip data...')
-    dfsplit = pd.concat([pd.Series(row['FullName'],
-                                   [row['ClipIds'].split('|'),
-                                    row['Roles'].split('|'),
-                                    row['AddInfos'].split('|')]) for _, row in df.iterrows()]).reset_index()
+    print('Split ClipIds...')
+    ids = df['ClipIds'].str.split('|', expand=True).stack()
+    print('Split Roles...')
+    roles = df['Roles'].str.split('|', expand=True).stack()
+    print('Split AddInfos...')
+    info = df['AddInfos'].str.split('|', expand=True).stack()
+    dfsplit = pd.DataFrame(dict(ClipIds=ids, Roles=roles, AddInfos=info))
+    print('Attach index...')
+    dfsplit['FullName'] = dfsplit.index.labels[0]
+    print('Map FullName...')
+    dfsplit['FullName'] = dfsplit['FullName'].map(pd.Series(df['FullName']))
+
+    #dfsplit = pd.concat([pd.Series(row['FullName'],
+    #                               [row['ClipIds'].split('|'),
+    #                                row['Roles'].split('|'),
+    #                                row['AddInfos'].split('|')]) for _, row in df.iterrows()]).reset_index()
     
     print('Rename columns...')
-    dfsplit.columns = ['CLIP_ID', 'ROLE', 'ADDITIONAL_INFO', 'PERSON_ID']
+    dfsplit.columns = ['ADDITIONAL_INFO', 'CLIP_ID', 'ROLE', 'PERSON_ID']
     
     print('Remove []-characters...')
     dfsplit['CLIP_ID'] = dfsplit['CLIP_ID'].map(lambda x: x.lstrip('[').rstrip(']'))
@@ -63,7 +75,8 @@ def main():
     dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'ROLE'])
     print('Final data: \n\n', df.head)
 
-    import_into_db(dfsplit, 'directs');
+    dfsplit.to_csv('DIRECTS.csv', index=False, encoding='utf-8')
+    #import_into_db(dfsplit, 'directs');
 
 if __name__ == "__main__":
     main()
