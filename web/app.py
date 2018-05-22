@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request
 from sqlalchemy import create_engine
 from sqlalchemy import text
-
+import sys
 
 app = Flask(__name__)
 
@@ -177,11 +177,49 @@ def read_queries():
 
 @app.route('/insert/clip/')
 def insert_clip():
-    return render_template('insert-clip.html')
+    title = request.args.get('title')
+    year = request.args.get('year')
+
+    typ = request.args.get('type')
+    engine = createEngine()
+    result = engine.execute(text('select max(clip_id) from clip'))
+    row = result.first()
+    id = row[0] + 1
+    data = {'clip_id': id, 'clip_type': typ, 'clip_year': year, 'clip_title': title}
+
+    if title and year and type:
+        engine.execute(text("INSERT INTO clip (clip_id, clip_type, clip_year, clip_title) VALUES (:clip_id, :clip_type, to_date(:clip_year, 'YYYY'), :clip_title)"),
+                   data)
+
+    return render_template('insert-clip.html', clip_title = title, clip_year = year, clip_type = typ, clip_id = id )
+
+@app.route('/delete/clip/')
+def delete_clip():
+    try:
+        input = int(request.args.get('id'))
+        print(type(input))
+    except:
+        input = request.args.get('id')
+        print(type(input))
+    engine = createEngine()
+    data = {'clip_id': input}
+    if input:
+        result = engine.execute(text("Select count(*) from clip where clip_id = :clip_id"), data)
+        row = result.first()
+        num = row[0]
+        engine.execute(text("delete from clip where clip_id = :clip_id"), data)
+    else:
+        num = False
+
+    return render_template('delete-clip.html', deleted = num, id = input )
 
 @app.route('/insert/')
 def insert():
     return render_template('insert-delete.html')
+
+@app.route('/delete/')
+def delete():
+    return render_template('delete.html')
 
 def createEngine():
     engine = create_engine('postgresql://db:db@db.kiru.io/db')
