@@ -30,7 +30,7 @@ def chunkify(lst, n):
 def import_into_db(df, table):
     csv = '../csv/%s.csv' % table
     df.to_csv(path_or_buf=csv, index=False, encoding='utf-8', na_rep='None')
-    import_csv(csv, df, table)
+    #import_csv(csv, df, table)
 
 
 def import_csv(csv, df, table):

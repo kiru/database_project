@@ -97,7 +97,7 @@ def person_table():
 def main():
     df = person_table()
     df.to_csv('PERSON.csv', index=False, encoding='utf-8')
-    import_into_db(df, 'person');
+    #import_into_db(df, 'person');
 
 
 if __name__ == "__main__":

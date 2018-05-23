@@ -12,6 +12,18 @@ import pandas as pd
 from sql_engine import *
 from person import person_table, replace_name_id
 
+def splitListToRows(row, row_accumulator, target_columns):
+
+    rd = zip(*(row[c].split('|') for c in target_columns))
+
+    for s in rd:
+        new_row = row.to_dict()
+
+        for c, v in zip(target_columns, s):
+            new_row[c] = v
+
+        row_accumulator.append(new_row)
+
 # read the data
 path = '../../../data/db2018imdb/actors.csv'
 df = pd.read_csv(path)
@@ -22,8 +34,6 @@ print('Get the person name-id relation...')
 # dfp=person_table()
 dfp = pd.read_csv('PERSON.csv')
 
-# df=df.iloc[0:10]
-
 # replace all language strings with the corresponding id (EXPENSIVE)
 print('Replace person name with id...')
 
@@ -31,13 +41,12 @@ nameSeries = pd.Series(dfp['PERSON_ID'].values, index=dfp['FULLNAME'])
 df['FullName'] = df['FullName'].map(nameSeries)
 
 print('Split entries with multi-clip data...')
-dfsplit = pd.concat([pd.Series(row['FullName'],
-                               [row['ClipIds'].split('|'),
-                                row['Chars'].split('|'),
-                                row['OrdersCredit'].split('|'),
-                                row['AddInfos'].split('|')]) for _, row in df.iterrows()]).reset_index()
+new_rows = []
+df.apply(splitListToRows, axis=1, args=(new_rows, ['ClipIds', 'Chars', 'OrdersCredit', 'AddInfos']))
+dfsplit = pd.DataFrame(new_rows)
+
 print('Rename columns...')
-dfsplit.columns = ['CLIP_ID', 'CHARACTER', 'ORDERS_CREDIT', 'ADDITIONAL_INFO', 'PERSON_ID']
+dfsplit.columns = ['ADDITIONAL_INFO', 'CHARACTER', 'CLIP_ID', 'PERSON_ID','ORDERS_CREDIT']
 
 print('Remove []-characters...')
 

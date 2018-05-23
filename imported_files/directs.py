@@ -75,8 +75,8 @@ def main():
     dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'ROLE'])
     print('Final data: \n\n', df.head)
 
-    dfsplit.to_csv('DIRECTS.csv', index=False, encoding='utf-8')
-    #import_into_db(dfsplit, 'directs');
+    #dfsplit.to_csv('DIRECTS.csv', index=False, encoding='utf-8')
+    import_into_db(dfsplit, 'directs');
 
 if __name__ == "__main__":
     main()

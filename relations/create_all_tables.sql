@@ -26,7 +26,7 @@ CREATE TABLE Directs
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
 );
 
-CREATE TABLE Acto
+CREATE TABLE Acts
 (
   person_id       INTEGER,
   clip_id         INTEGER,
@@ -43,7 +43,7 @@ CREATE TABLE Produces
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info VARCHAR(200),
+  additional_info VARCHAR(300),
   role            VARCHAR(200),
   PRIMARY KEY (person_id, clip_id, role),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
@@ -54,9 +54,9 @@ CREATE TABLE Writes
 (
   person_id       INTEGER,
   clip_id         INTEGER,
-  additional_info VARCHAR(200),
-  work_type       VARCHAR(20),
-  role            VARCHAR(200),
+  additional_info VARCHAR(400),
+  work_type       VARCHAR(50),
+  role            VARCHAR(100),
   PRIMARY KEY (person_id, clip_id, role),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
   FOREIGN KEY (clip_id) REFERENCES Clip (clip_id)
