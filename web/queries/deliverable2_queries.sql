@@ -91,20 +91,13 @@ FROM (
      ) d;
 
 -- Print the 10 most common clip languages
-SELECT d.LANGUAGE
-FROM
-  (
-    SELECT
-      L.LANGUAGE,
-      count(*) AS count
-    FROM CLIP_LANGUAGE
-      JOIN LANGUAGE L ON CLIP_LANGUAGE.LANGUAGE_ID = L.LANGUAGE_ID
-    GROUP BY L.LANGUAGE
-    ORDER BY count DESC
-    FETCH FIRST 10 ROWS ONLY
-  ) d
-;
 
+SELECT L.LANGUAGE
+FROM CLIP_LANGUAGE
+  JOIN LANGUAGE L ON CLIP_LANGUAGE.LANGUAGE_ID = L.LANGUAGE_ID
+GROUP BY L.LANGUAGE
+ORDER BY count(*) DESC
+FETCH FIRST 10 ROWS ONLY;
 -- Print the full name of the actor who has performed in the highest number of clips with a user-specified type.
 SELECT p.FULLNAME
 FROM (
