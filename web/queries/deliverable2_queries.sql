@@ -2,11 +2,10 @@
 SELECT
   C.CLIP_ID,
   C.CLIP_TITLE,
-  sum(R.RUNNING_TIME) AS runtime
+  max(R.RUNNING_TIME) AS runtime
 FROM CLIP c
-  JOIN CLIP_COUNTRY cc ON cc.CLIP_ID = c.CLIP_ID
-  JOIN COUNTRY C2 ON cc.COUNTRY_ID = C2.COUNTRY_ID
   JOIN RUNS R ON c.CLIP_ID = R.CLIP_ID
+  JOIN COUNTRY C2 ON r.COUNTRY_ID = C2.COUNTRY_ID
 WHERE C2.COUNTRYNAME = 'France'
 GROUP BY c.CLIP_ID, c.CLIP_TITLE
 ORDER BY runtime DESC, c.CLIP_ID, C.CLIP_TITLE
@@ -38,6 +37,8 @@ GROUP BY G.GENRE
 ORDER BY g.GENRE;
 
 -- Print the name of actor/actress who has acted in more clips than anyone else
+
+
 SELECT d.FULLNAME
 FROM
   (SELECT
@@ -45,36 +46,33 @@ FROM
      count(*) AS nb_acts
    FROM PERSON P
      JOIN ACTS A2 ON P.PERSON_ID = A2.PERSON_ID
-     JOIN CLIP C2 ON A2.CLIP_ID = C2.CLIP_ID
-   GROUP BY P.FULLNAME
+   GROUP BY P.person_id
    ORDER BY nb_acts DESC
    FETCH FIRST 1 ROW ONLY
   ) d;
 
 -- Print the maximum number of clips any director has directed.
-SELECT d.FULLNAME
-FROM
-  (
-    SELECT
-      P.FULLNAME,
-      count(*) AS nb_acts
-    FROM PERSON P
-      JOIN DIRECTS D2 ON P.PERSON_ID = D2.PERSON_ID
-      JOIN CLIP C2 ON D2.CLIP_ID = C2.CLIP_ID
-    GROUP BY P.FULLNAME
-    ORDER BY nb_acts DESC
-    FETCH FIRST 1 ROWS ONLY
-  ) d;
+
+  SELECT
+    P.FULLNAME,
+    count(*) AS nb_acts
+  FROM PERSON P
+    JOIN DIRECTS D2 ON P.PERSON_ID = D2.PERSON_ID
+    JOIN CLIP C2 ON D2.CLIP_ID = C2.CLIP_ID
+  GROUP BY P.FULLNAME
+  ORDER BY nb_acts DESC
+  FETCH FIRST 1 ROWS ONLY;
 
 -- Print the names of people that had at least 2 different jobs in a single clip. For example, if X has both
 -- acted, directed and written movie Y, his/her name should be printed out. On the other hand, if X has
 -- acted as 4 different personas in the same clip, but done nothing else, he/she should not be printed.
 ;
-SELECT p.FULLNAME
+SELECT d.FULLNAME
 FROM (
        SELECT
          c.CLIP_ID,
          P.PERSON_ID,
+         p.fullname,
          count(a.CLIP_ID) AS acts,
          count(d.CLIP_ID) AS directs,
          count(w.CLIP_ID) AS writes
@@ -90,8 +88,7 @@ FROM (
        HAVING (count(a.CLIP_ID) > 0 AND count(d.CLIP_ID) > 0) OR
               (count(d.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0) OR
               (count(a.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0)
-     ) m
-  JOIN PERSON p ON p.PERSON_ID = m.PERSON_ID;
+     ) d;
 
 -- Print the 10 most common clip languages
 SELECT d.LANGUAGE
@@ -103,7 +100,7 @@ FROM
     FROM CLIP_LANGUAGE
       JOIN LANGUAGE L ON CLIP_LANGUAGE.LANGUAGE_ID = L.LANGUAGE_ID
     GROUP BY L.LANGUAGE
-    ORDER BY d.count DESC
+    ORDER BY count DESC
     FETCH FIRST 10 ROWS ONLY
   ) d
 ;
