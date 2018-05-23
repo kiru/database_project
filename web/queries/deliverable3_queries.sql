@@ -1,14 +1,41 @@
 --a) Print the names of the top 10 actors ranked by the average rating of their 3 highest-rated clips that where
 --voted by at least 100 people. The actors must have had a role in at least 5 clips (not necessarily rated).
-Select d.fullname
-from (
-  SELECT
-    c.clip_id,
-    p.person_id,
-    p.fullname,
 
-)
-from clip_rating r where r.votes > 99
+
+
+--avg top 3 ratings where voted by at least 100
+select avg(d.rank)
+from
+(
+select r.rank
+from clip_rating r
+  join acts a on a.clip_id = r.clip_id
+where votes >= 100 and a.person_id = 19
+order by r.rank desc
+fetch first 3 rows only
+) d;
+
+-- The actors must have had a role in at least 5 clips
+select
+  d.*,
+  (select
+   avg(f.rank)
+    from
+    (
+    select r.rank
+    from clip_rating r
+      join acts a on a.clip_id = r.clip_id
+    where votes >= 100 and a.person_id = d.person_id and r.rank is not NULL
+    order by r.rank desc
+    fetch first 3 rows only
+    )
+  f)
+from (
+Select person_id, count(character)
+from acts
+group by person_id
+having count(character) > 4
+) d;
 
 --b) Compute the average rating of the top-100 rated clips per decade in decreasing order.
 
@@ -20,10 +47,34 @@ from clip_rating r where r.votes > 99
 
 
 --d) For each year, print the title, year and rank-in-year of top 3 clips, based on their ranking.
-Select extract(year from c.clip_year), min(r.rank) as rank
+Select
+  extract(year from c.clip_year), min(r.rank) as rank
 from clip c, clip_rating r
 where c.clip_id = r.clip_id
 GROUP BY extract(year from c.clip_year)
+;
+
+select
+  *
+from
+  ( select distinct extract(year from c.clip_year) as y from clip c ) y,
+  (
+    select *
+    from clip c
+    join clip_rating rating on c.clip_id = rating.clip_id
+    order by rating.rank desc
+    -- FETCH FIRST 3 ROWS ONLY
+  ) b
+where extract(year from b.clip_year) = y.y
+order by y.y desc, b.rank desc
+;
+
+    select *
+    from clip c
+    join clip_rating rating on c.clip_id = rating.clip_id
+    ;
+
+
 -- ORDER BY c.clip_year, rank ASC
 
 --e) Print the names of all directors who have also written scripts for clips, in all of which they were
