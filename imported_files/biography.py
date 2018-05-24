@@ -52,7 +52,7 @@ def biography_table(spouse=False):
     df = pd.read_csv(path, names=['Name', 'RealName', 'Nickname', 'DateAndPlaceOfBirth',
                                   'Height', 'Biography', 'Biographer', 'DateAndCauseOfDeath', 'Spouse', 'Trivia',
                                   'BiographicalBooks',
-                                  'PersonalQuotes', 'Salary', 'Trademark', 'WhereAreTheyNow'], skiprows=1)
+                                  'PersonalQuotes', 'Salary', 'Trademark', 'WhereAreTheyNow'], skiprows=1,quoting=3)
 
 
     if not spouse:
@@ -61,6 +61,8 @@ def biography_table(spouse=False):
         # dfp=person_table()
         print('Get the person name-id relation...')
         dfp = pd.read_csv('PERSON.csv')
+
+        #df=df.iloc[0:100]
 
         # replace all language strings with the corresponding id (EXPENSIVE)
         print('Replace person name with id...')
@@ -103,12 +105,13 @@ def biography_table(spouse=False):
         # df['WhereAreTheyNow'] = df['WhereAreTheyNow'].str.replace('(.*\d\d\d\d)', '').str.encode('utf-8')
 
         print('Rename columns...')
-        df.columns = ['FULLNAME', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
+        df.columns = ['NAME', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
                       'HEIGHT', 'BIOGRAPHY', 'BIOGRAPHER', 'DEATH_CAUSE', 'Spouse',
                       'TRIVIA', 'BiographicalBooks', 'PERSONALQUOTES', 'SALARY', 'TRADEMARK', 'WHERENOW',
                       'PERSON_ID','BIRTH_DATE', 'DEATH_DATE']
 
         # get maximum lengths of strings
+        maxlength(df, 'NAME')
         maxlength(df, 'REALNAME')
         maxlength(df, 'NICKNAME')
         maxlength(df, 'BIRTH_PLACE')
@@ -130,11 +133,11 @@ def biography_table(spouse=False):
         height = cm.fillna(0) + feet.fillna(0) * 30.48 + (inch.fillna(0) + 0.5 * halfinch.fillna(0)) * 2.54
         df['HEIGHT'] = height.replace(0, np.nan)
 
-        df['NICKNAME']=df['NICKNAME'].str.split('|')
+        #df['NICKNAME']=df['NICKNAME'].astype('str').map(lambda x: x.lstrip('[').rstrip(']'))
 
     else:
         print('Rename columns...')
-        df.columns = ['FULLNAME', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
+        df.columns = ['NAME', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
                       'HEIGHT', 'BIOGRAPHY', 'BIOGRAPHER', 'DEATH_CAUSE', 'Spouse',
                       'TRIVIA', 'BiographicalBooks', 'PERSONALQUOTES', 'SALARY', 'TRADEMARK', 'WHERENOW']
     # add index
@@ -144,7 +147,7 @@ def biography_table(spouse=False):
         return df
 
     else:
-        dfselect = df[['PERSON_ID', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
+        dfselect = df[['PERSON_ID', 'NAME', 'REALNAME', 'NICKNAME', 'BIRTH_PLACE',
                        'HEIGHT', 'BIOGRAPHY', 'BIOGRAPHER', 'DEATH_CAUSE',
                        'TRIVIA', 'PERSONALQUOTES', 'SALARY', 'TRADEMARK', 'WHERENOW',
                        'BIRTH_DATE', 'DEATH_DATE', 'BIOGRAPHY_ID']]

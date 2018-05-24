@@ -52,15 +52,15 @@ def person_table():
     path = '../../../data/db2018imdb/writers.csv'
     df4 = pd.read_csv(path)
     path = '../../../data/db2018imdb/biographies.csv'
-    df5 = pd.read_csv(path, names=['FullName', 'RealName', 'Nickname', 'DateAndPlaceOfBirth',
+    df5 = pd.read_csv(path, names=['Name', 'RealName', 'Nickname', 'DateAndPlaceOfBirth',
                                    'Height', 'Biography', 'Biographer', 'DateAndCauseOfDeath', 'Spouse', 'Trivia',
                                    'BiographicalBooks',
-                                   'PersonalQuotes', 'Salary', 'Trademark', 'WhereAreTheyNow'], skiprows=1)
+                                   'PersonalQuotes', 'Salary', 'Trademark', 'WhereAreTheyNow'], skiprows=1,quoting=3)
 
     print('Split spouse data...')
     # TODO: consider only the name in ' '
     df5['Spouse'] = df5['Spouse'].fillna('[]')
-    dfspouse = pd.concat([pd.Series(row['FullName'],
+    dfspouse = pd.concat([pd.Series(row['Name'],
                                     row['Spouse'].split('|')) for _, row in df5.iterrows()]).reset_index()
 
     # print("AHAHSDF",dfspouse.head())
@@ -73,7 +73,7 @@ def person_table():
 
     print('Combine all persons...')
     dfall = df1['FullName'].append(df2['FullName'].append(
-        df3['FullName'].append(df4['FullName'].append(df5['FullName']).append(dfspouse['index']))))
+        df3['FullName'].append(df4['FullName'].append(df5['Name']).append(dfspouse['index']))))
     print('Size of all person data combined: ', dfall.shape)
     # print("dd\n", dfall)
     # select only unique entries
