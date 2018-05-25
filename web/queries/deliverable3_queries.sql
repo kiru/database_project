@@ -10,34 +10,71 @@ from
 select r.rank
 from clip_rating r
   join acts a on a.clip_id = r.clip_id
-where votes >= 100 and a.person_id = 19
+where a.person_id = 28
 order by r.rank desc
 fetch first 3 rows only
 ) d;
 
 -- The actors must have had a role in at least 5 clips
-select
-  d.*,
-  (select
-   avg(f.rank)
-    from
-    (
-    select r.rank
-    from clip_rating r
-      join acts a on a.clip_id = r.clip_id
-    where votes >= 100 and a.person_id = d.person_id and r.rank is not NULL
-    order by r.rank desc
-    fetch first 3 rows only
-    )
-  f)
-from (
-Select person_id, count(character)
-from acts
-group by person_id
-having count(character) > 4
-) d;
+select *
+FROM (
+  SELECT
+    d.*,
+    (SELECT avg(f.rank)
+     FROM
+       (
+         SELECT r.rank
+         FROM clip_rating r
+           JOIN acts a ON a.clip_id = r.clip_id
+         WHERE votes >= 100 AND a.person_id = d.person_id AND r.rank IS NOT NULL
+         ORDER BY r.rank DESC
+         FETCH FIRST 3 ROWS ONLY
+       )
+       f) as avg_rating
+  FROM (
+         SELECT
+           person_id,
+           count(character)
+         FROM acts
+         GROUP BY person_id
+         HAVING count(character) > 4
+       ) d
+) b where b.avg_rating is not NULL
+order by b.avg_rating DESC
+fetch first 10 rows ONLY ;
 
 --b) Compute the average rating of the top-100 rated clips per decade in decreasing order.
+select avg(d.rank)
+FROM (
+  SELECT cr.rank
+  FROM clip_rating cr
+    JOIN clip c ON c.clip_id = cr.clip_id
+  WHERE extract(DECADE FROM c.clip_year) * 10 = 2000
+  ORDER BY cr.rank DESC
+  FETCH FIRST 100 ROWS ONLY
+) d;
+select
+  b.decade,
+  (
+  select avg(d.rank)
+FROM (
+  SELECT cr.rank
+  FROM clip_rating cr
+    JOIN clip c ON c.clip_id = cr.clip_id
+  WHERE extract(DECADE FROM c.clip_year) * 10 = b.decade
+  ORDER BY cr.rank DESC
+  FETCH FIRST 100 ROWS ONLY
+) d
+
+  ) as avg_rating
+from
+  (
+    SELECT DISTINCT extract(DECADE FROM clip_year) * 10 as decade
+    FROM clip
+  ) b
+
+where b.decade is not null
+order by avg_rating;
 
 
 
@@ -98,7 +135,7 @@ order by y.y desc, b.rank desc
 
 
 --i) Compute the average rating for the clips whose genre is the most popular genre.
-Select g.
+-- Select g.
 
 
 --j) Print the names of the actors that have participated in more than 100 clips, of which at least 60% where
@@ -108,6 +145,15 @@ Select g.
 
 
 --k) Print the number of Dutch movies whose genre is the second most popular one.
+Select cg.genre_id, count(cg.genre_id)
+  from clip_country cc
+    join country c on cc.country_id = c.country_id
+    join clip_genre cg on cc.clip_id = cg.clip_id
+  where c.countryname = 'Netherlands'
+GROUP BY cg.genre_id
+order by count(cg.genre_id) desc
+offset 1
+fetch first 1 rows only;
 
 
 
