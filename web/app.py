@@ -7,6 +7,7 @@ import sys
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def hello_world():
     engine = createEngine()
@@ -19,47 +20,60 @@ def hello_world():
 
     return render_template('index.html', title='Home')
 
+
 @app.route('/search/show/<table>/')
 def search_result(table):
     input = request.args.get('query')
     engine = createEngine()
 
-
     names = []
     if table == 'Country':
         column_name = 'countryname'
-        search_query(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 200', column_name)
+        search_query(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 200',
+                     column_name)
     elif table == 'Language':
         column_name = 'language'
-        search_query(engine, input, names, 'select * from Language where lower(language) like :search limit 200', column_name,
-                       "Language")
+        search_query(engine, input, names, 'select * from Language where lower(language) like :search limit 200',
+                     column_name,
+                     "Language")
     elif table == 'Person':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from Person where lower(fullname) like :search limit 200', column_name,
-                       "Person")
+        search_query(engine, input, names, 'select * from Person where lower(fullname) like :search limit 200',
+                     column_name,
+                     "Person")
     elif table == 'Actor':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select DISTINCT person.fullname from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
-                       "Actor")
+        search_query(engine, input, names,
+                     'select DISTINCT person.fullname from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     column_name,
+                     "Actor")
     elif table == 'Clip':
         column_name = 'clip_title'
-        search_query(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 200', column_name,
-                       "Clip")
+        search_query(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 200',
+                     column_name,
+                     "Clip")
 
     elif table == 'Writer':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select DISTINCT person.fullname from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
-                       "Writer")
+        search_query(engine, input, names,
+                     'select DISTINCT person.fullname from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     column_name,
+                     "Writer")
     elif table == 'Director':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select DISTINCT person.fullname from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
-                       "Director")
+        search_query(engine, input, names,
+                     'select DISTINCT person.fullname from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     column_name,
+                     "Director")
     elif table == 'Producer':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select DISTINCT person.fullname from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200', column_name,
-                       "Producer")
+        search_query(engine, input, names,
+                     'select DISTINCT person.fullname from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     column_name,
+                     "Producer")
 
-    return render_template('search-result.html', tables=names, query=input, table_name = table)
+    return render_template('search-result.html', tables=names, query=input, table_name=table)
+
 
 def search_query(engine, input, names, search, column, country="Country"):
     sql = text(search)
@@ -84,12 +98,16 @@ def search():
 
     names = []
 
+    if not input:
+        return render_template('search.html', tables=names, query=input)
+
     if not (c or l or p or clip or a or direct or write or produce):
         search_country(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 1')
         search_country(engine, input, names, 'select * from Language where lower(language) like :search limit 1',
                        "Language")
         search_country(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 1', "Clip")
-        search_country(engine, input, names, 'select * from person where lower(fullname) like :search limit 1', "Person")
+        search_country(engine, input, names, 'select * from person where lower(fullname) like :search limit 1',
+                       "Person")
         search_country(engine, input, names,
                        'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
                        "Actor")
@@ -108,13 +126,18 @@ def search():
         if c:
             search_country(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 1')
         if l:
-            search_country(engine, input, names, 'select * from Language where lower(language) like :search limit 1', "Language")
+            search_country(engine, input, names, 'select * from Language where lower(language) like :search limit 1',
+                           "Language")
         if clip:
-            search_country(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 1', "Clip")
+            search_country(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 1',
+                           "Clip")
         if p:
-            search_country(engine, input, names, 'select * from person where lower(fullname) like :search limit 1', "Person")
+            search_country(engine, input, names, 'select * from person where lower(fullname) like :search limit 1',
+                           "Person")
         if a:
-            search_country(engine, input, names, 'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1', "Actor")
+            search_country(engine, input, names,
+                           'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                           "Actor")
         if direct:
             search_country(engine, input, names,
                            'select * from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
@@ -138,26 +161,94 @@ def search_country(engine, input, names, search, country="Country"):
         names.append(country);
 
 
-@app.route('/predefined/<query_nr>/')
-def query_result(query_nr):
+@app.route('/predefined/1/')
+def query_result_1():
+    c = request.args.get('country')
+    engine = createEngine()
 
-    # objects = os.listdir('queries')
-    #
-    # o = objects[int(float(query_nr)) - 1]
-    # with open(os.path.join('queries', o)) as f:
-    #     query = f.read()
-    #
-    # engine = createEngine()
-    #
-    # sql = text(query)
-    # result = engine.execute(sql)
-    #
-    # r = []
-    # for row in result:
-    #     print(row[0])
-    #     r.append(row[0])
+    sql = text("""
+        SELECT
+          C.CLIP_ID,
+          C.CLIP_TITLE,
+          max(R.RUNNING_TIME) AS runtime
+        FROM CLIP c
+          JOIN RUNS R ON c.CLIP_ID = R.CLIP_ID
+          JOIN COUNTRY C2 ON r.COUNTRY_ID = C2.COUNTRY_ID
+        WHERE lower(C2.COUNTRYNAME) = lower(:country)
+        GROUP BY c.CLIP_ID, c.CLIP_TITLE
+        ORDER BY runtime DESC, c.CLIP_ID, C.CLIP_TITLE
+        FETCH FIRST 10 ROWS ONLY;
+    """)
 
-    return render_template('predefined-result.html')
+    names = []
+    result = engine.execute(sql, country=c)
+    for row in result:
+        names.append({
+            "title": row[1],
+            "running": row[2]
+        })
+
+    return render_template('predefined_result_1.html', names=names)
+
+@app.route('/predefined/2/')
+def query_result_2():
+    c = request.args.get('year')
+    engine = createEngine()
+
+    sql = text("""
+        SELECT
+          c2.COUNTRYNAME,
+          count(*) AS nb_of_clips
+        FROM CLIP c
+          JOIN RELEASED R ON c.CLIP_ID = R.CLIP_ID
+          JOIN COUNTRY C2 ON R.COUNTRY_ID = C2.COUNTRY_ID
+        WHERE extract(YEAR FROM r.RELEASE_DATE) = :yy
+        GROUP BY c2.COUNTRYNAME
+        ORDER BY c2.COUNTRYNAME
+    """)
+
+    names = []
+    result = engine.execute(sql, yy=c)
+    for row in result:
+        names.append({
+            "name": row[0],
+            "number": row[1]
+        })
+
+    return render_template('predefined_result_2.html', names=names)\
+
+
+@app.route('/predefined/3/')
+def query_result_3():
+    y = request.args.get('year')
+    c = request.args.get('country')
+
+    engine = createEngine()
+
+    sql = text("""
+        SELECT
+          G.GENRE,
+          count(*) AS nb_of_clips
+        FROM CLIP c
+          JOIN CLIP_GENRE CG ON CG.CLIP_ID = C.CLIP_ID
+          JOIN RELEASED R ON c.CLIP_ID = R.CLIP_ID
+          JOIN COUNTRY C2 ON R.COUNTRY_ID = C2.COUNTRY_ID
+          JOIN GENRE G ON CG.GENRE_ID = G.GENRE_ID
+        WHERE extract(YEAR FROM r.RELEASE_DATE) >= :year
+              AND lower(C2.COUNTRYNAME) = lower(:country)
+        GROUP BY G.GENRE
+        ORDER BY g.GENRE;
+    """)
+
+    names = []
+    result = engine.execute(sql, country=c, year=y)
+    for row in result:
+        names.append({
+            "genre": row[0],
+            "count": row[1]
+        })
+
+    return render_template('predefined_result_3.html', names=names)
 
 
 @app.route('/predefined/')
@@ -188,10 +279,12 @@ def insert_clip():
     data = {'clip_id': id, 'clip_type': typ, 'clip_year': year, 'clip_title': title}
 
     if title and year and type:
-        engine.execute(text("INSERT INTO clip (clip_id, clip_type, clip_year, clip_title) VALUES (:clip_id, :clip_type, to_date(:clip_year, 'YYYY'), :clip_title)"),
-                   data)
+        engine.execute(text(
+            "INSERT INTO clip (clip_id, clip_type, clip_year, clip_title) VALUES (:clip_id, :clip_type, to_date(:clip_year, 'YYYY'), :clip_title)"),
+            data)
 
-    return render_template('insert-clip.html', clip_title = title, clip_year = year, clip_type = typ, clip_id = id )
+    return render_template('insert-clip.html', clip_title=title, clip_year=year, clip_type=typ, clip_id=id)
+
 
 @app.route('/delete/clip/')
 def delete_clip():
@@ -211,20 +304,24 @@ def delete_clip():
     else:
         num = False
 
-    return render_template('delete-clip.html', deleted = num, id = input )
+    return render_template('delete-clip.html', deleted=num, id=input)
+
 
 @app.route('/insert/')
 def insert():
     return render_template('insert-delete.html')
 
+
 @app.route('/delete/')
 def delete():
     return render_template('delete.html')
+
 
 def createEngine():
     engine = create_engine('postgresql://db:db@db.kiru.io/db')
     engine.connect()
     return engine
+
 
 if __name__ == '__main__':
     app.run(debug=True)

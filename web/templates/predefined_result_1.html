@@ -44,6 +44,7 @@
 
 
     <h2>Longest Clips:</h2>
+    <br>
     <div>
         <table class="table table-condensed ">
             <thead>
@@ -53,19 +54,18 @@
             </tr>
             </thead>
             <tbody>
-            <tr>
-                <th scope="row"><span>The undead man</span> <br/></th>
-                <th><span>12 hours</span> <br/></th>
-            </tr>
-            <tr>
-                <th scope="row"><span>Watch paint dry</span> <br/></th>
-                <th><span>2 hours</span> <br/></th>
-            </tr>
+
+            {% for name in names %}
+                <tr>
+                    <th scope="row"><span>{{ name.title }}</span> <br/></th>
+                    <th><span>{{ name.running }}</span> <br/></th>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
     </div>
 
-
+    <a class="btn btn-primary" href="/predefined/">Back</a>
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript

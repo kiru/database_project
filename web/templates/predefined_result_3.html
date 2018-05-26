@@ -34,7 +34,7 @@
                 <li class="nav-item">
                     <a class="nav-link" href="/insert/">Insert</a>
                 </li>
-                 <li class="nav-item">
+                <li class="nav-item">
                     <a class="nav-link" href="/delete/">Delete</a>
                 </li>
             </ul>
@@ -42,68 +42,30 @@
         <h3 class="text-muted">IMDB Movies Database</h3>
     </div>
 
-    <div>
-        <div>
-            <h4><a>Longest clip</a></h4>
-            <form action="/predefined/1">
-                <div class="form-group">
-                    <label for="input1">Country</label>
-                    <input type="text" class="form-control" id="input1" placeholder="e.g France" name="country" required    >
-                    <input type="submit" class="btn btn-primary" value="Run">
-                </div>
-            </form>
-        </div>
-        <hr />
-        <div>
-            <h4>Number of clips per country</h4>
-            <form action="/predefined/2">
-                <div class="form-group">
-                    <label for="input3">Year</label>
-                    <input type="text" class="form-control" id="input3" placeholder="e.g. 2001" name="year" required>
-                </div>
-                <input type="submit" class="btn btn-primary" value="Run">
-            </form>
-        </div>
-        <hr/>
-        <div>
-            <h4>Number of clips per genre</h4>
-            <form action="/predefined/3">
-                <div class="form-group">
-                    <label for="input2">Country: </label>
-                    <input type="text" class="form-control" id="input2" placeholder="e.g France" name="country" required>
-                </div>
-                <div class="form-group">
-                    <label for="input3">From Year</label>
-                    <input type="text" class="form-control" id="input3" placeholder="e.g. 2001" name="year" required>
-                </div>
-                <input type="submit" class="btn btn-primary" value="Run">
-            </form>
-        </div>
 
-        {% for query in queries %}
-        {% endfor %}
+    <h2>Number of clips per genre</h2>
+    <br>
+    <div>
+        <table class="table table-condensed ">
+            <thead>
+            <tr>
+                <th scope="col">Genre</th>
+                <th>Number of clips</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for name in names %}
+                <tr>
+                    <th scope="row"><span>{{ name.genre }}</span> <br/></th>
+                    <th><span>{{ name.count }}</span> <br/></th>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
     </div>
 
-    {% if countries %}
-        <div>
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                {% for r in result %}
-                    <tr>
-                        <th scope="row">
-                            <span>{{ r }}</span> <br/>
-                        </th>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    {% endif %}
+    <a class="btn btn-primary" href="/predefined/">Back</a>
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript
