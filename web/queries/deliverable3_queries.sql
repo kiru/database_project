@@ -86,7 +86,24 @@ where x.first_year in (
 ;
 
 --d) For each year, print the title, year and rank-in-year of top 3 clips, based on their ranking.
--- TODO
+
+WITH summary AS (
+    select
+      C.CLIP_YEAR,
+      C.clip_title,
+      CR.RANK,
+      ROW_NUMBER() OVER(PARTITION BY C.CLIP_YEAR
+                           ORDER BY CR.RANK DESC, CR.VOTES DESC) AS rowind
+FROM CLIP C
+  JOIN CLIP_RATING CR ON C.CLIP_ID = CR.CLIP_ID)
+SELECT
+  extract(YEAR FROM S.CLIP_YEAR),
+  S.CLIP_TITLE,
+  S.RANK
+FROM summary S
+WHERE S.rowind <=3 and S.CLIP_YEAR IS NOT NULL
+ORDER BY S.clip_year desc;
+
 
 --e) Print the names of all directors who have also written scripts for clips, in all of which they were
 --additionally actors (but not necessarily directors) and every clip they directed has at least two more
