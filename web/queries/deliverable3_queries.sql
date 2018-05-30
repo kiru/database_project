@@ -148,7 +148,7 @@ order by aw.fullname
 
 --f) Print the names of the actors that are not married and have participated in more than 2 clips that they
 --both acted in and co-directed it.
-
+(
 with  unmarried_person as
       (select
         p.person_id
@@ -170,13 +170,29 @@ select
 from person p
   join unmarried_person a on a.person_id = p.person_id
   join acting_codirectors d on d.person_id = p.person_id
-;
+);
 
 --g) Print the names of screenplay story writers who have worked with more than 2 producers.
--- TODO
-select
-  distinct role
-from writes ;
+(
+with  screenplay_clips as
+        (select
+          w.person_id,
+          w.clip_id
+        from writes w
+         where work_type like '%screenplay story%'),
+      twoproducer_clips as
+        (select
+          c.clip_id
+        from clip c
+          join produces p on p.clip_id=c.clip_id
+        group by c.clip_id
+        having count(distinct p.person_id)>1)
+select distinct
+  p.fullname
+from person p
+  join screenplay_clips sc on sc.person_id=p.person_id
+  join twoproducer_clips tpc on tpc.clip_id=sc.clip_id
+ );
 
 
 --h) Compute the average rating of an actor's clips (for each actor) when she/he has a leading role (first 3
