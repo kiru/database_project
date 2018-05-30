@@ -148,7 +148,29 @@ order by aw.fullname
 
 --f) Print the names of the actors that are not married and have participated in more than 2 clips that they
 --both acted in and co-directed it.
--- TODO
+
+with  unmarried_person as
+      (select
+        p.person_id
+      from person p
+        left join married_to m on m.person_id = p.person_id
+        where m.person_id is null),
+      acting_codirectors as
+      (select
+        p.person_id
+      from person p
+        join acts a on p.person_id = a.person_id
+        join directs d on p.person_id = d.person_id
+        join clip c on d.clip_id = c.clip_id and a.clip_id = c.clip_id
+        where d.role like 'co-director%'
+        group by p.person_id
+        having count(p.person_id)>2)
+select
+  p.fullname
+from person p
+  join unmarried_person a on a.person_id = p.person_id
+  join acting_codirectors d on d.person_id = p.person_id
+;
 
 --g) Print the names of screenplay story writers who have worked with more than 2 producers.
 -- TODO
