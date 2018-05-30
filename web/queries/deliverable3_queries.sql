@@ -106,9 +106,45 @@ ORDER BY S.clip_year desc;
 
 
 --e) Print the names of all directors who have also written scripts for clips, in all of which they were
---additionally actors (but not necessarily directors) and every clip they directed has at least two more
---points in ranking than any clip they wrote.
--- TODO
+--additionally actors (but not necessarily directors)
+-- and every clip they directed has at least two more points in ranking than any clip they wrote.
+
+with directed as (select distinct --join to get directors with their clip_ratings
+                    p.person_id,
+                    cr.rank
+                  from person p
+                    join directs d on p.person_id = d.person_id
+                    join clip c on d.clip_id = c.clip_id
+                    join clip_rating cr on c.clip_id = cr.clip_id
+                  ),
+        wrote as (select distinct --join to get writers with their clip_ratings
+                    p.person_id,
+                    cr.rank
+                  from person p
+                    join writes w on p.person_id = w.person_id
+                    join clip c on w.clip_id = c.clip_id
+                    join clip_rating cr on c.clip_id = cr.clip_id
+                  )
+select
+ aw.fullname,
+ min(d.rank) as minpoints_directed,
+ max(w.rank) as minpoints_written
+from
+(select distinct --join to get writers who acted in their written clips
+  p.person_id,
+  p.fullname
+from person p
+  join writes w on p.person_id = w.person_id
+  join acts a on p.person_id = a.person_id
+  join clip c on w.clip_id = c.clip_id and a.clip_id = c.clip_id
+) as aw
+join directed d on d.person_id=aw.person_id --final join of above tables
+join wrote w on w.person_id=aw.person_id
+group by aw.fullname
+having( min(d.rank) >= max(w.rank) +2) --data selection criterion on ranking
+order by aw.fullname
+;
+
 
 --f) Print the names of the actors that are not married and have participated in more than 2 clips that they
 --both acted in and co-directed it.
