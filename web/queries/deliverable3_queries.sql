@@ -199,6 +199,23 @@ from person p
 -- credits in the clip).
 -- TODO: we cannot do this, since we loose the information of the order of the credit.
 
+with person_leading as (
+    Select DISTINCT aa.person_id, fullname
+    from acts aa
+      join clip_rating cr on aa.clip_id = cr.clip_id
+      join person p on aa.person_id = p.person_id
+      where to_number(orders_credit, '99999999.9') <= 3
+)
+Select b.person_id, b.fullname,
+  (
+    Select round(avg(cr.rank), 2)
+    from acts a
+      join clip_rating cr on a.clip_id = cr.clip_id
+      where to_number(orders_credit, '99999999.9') <= 3 AND b.person_id = a.person_id
+  ) as avg_rating
+from person_leading b
+  order by b.person_id DESC;
+
 --i) Compute the average rating for the clips whose genre is the most popular genre.
 -- Select g.
 select
