@@ -1,7 +1,7 @@
 import os
 import timeit
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from sqlalchemy import create_engine
 from sqlalchemy import text
 import time
@@ -18,14 +18,7 @@ engine = createEngine()
 
 @app.route('/')
 def hello_world():
-    sql = text('select COUNTRYNAME from Country')
-    result = engine.execute(sql)
-    names = []
-    for row in result:
-        names.append(row[0])
-
-    return render_template('index.html', title='Home')
-
+    return redirect('/search')
 
 @app.route('/search/show/<table>/')
 def search_result(table):
