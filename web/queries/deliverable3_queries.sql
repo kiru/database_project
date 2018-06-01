@@ -33,6 +33,7 @@ where b.avg_rating is not NULL
 order by b.avg_rating DESC
 fetch first 10 rows ONLY ;
 
+;
 --b) Compute the average rating of the top-100 rated clips per decade in decreasing order.
 select
   b.decade,
