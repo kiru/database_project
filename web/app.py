@@ -1,74 +1,71 @@
 import os
+import timeit
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
 from sqlalchemy import create_engine
 from sqlalchemy import text
+import time
+
 import sys
 
-app = Flask(__name__)
+def createEngine():
+    engine = create_engine('postgresql://db:db@db.kiru.io/db')
+    engine.connect()
+    return engine
 
+app = Flask(__name__)
+engine = createEngine()
 
 @app.route('/')
 def hello_world():
-    engine = createEngine()
-
-    sql = text('select COUNTRYNAME from Country')
-    result = engine.execute(sql)
-    names = []
-    for row in result:
-        names.append(row[0])
-
-    return render_template('index.html', title='Home')
-
+    return redirect('/search')
 
 @app.route('/search/show/<table>/')
 def search_result(table):
     input = request.args.get('query')
-    engine = createEngine()
-
     names = []
     if table == 'Country':
         column_name = 'countryname'
-        search_query(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 200',
+        search_query(engine, input, names, 'select * from Country where COUNTRYNAME ilike :search limit 200',
                      column_name)
     elif table == 'Language':
         column_name = 'language'
-        search_query(engine, input, names, 'select * from Language where lower(language) like :search limit 200',
+        search_query(engine, input, names, 'select * from Language where language ilike :search limit 200',
                      column_name,
                      "Language")
     elif table == 'Person':
         column_name = 'fullname'
-        search_query(engine, input, names, 'select * from Person where lower(fullname) like :search limit 200',
+        search_query(engine, input, names, 'select * from Person where fullname ilike :search limit 200',
                      column_name,
                      "Person")
     elif table == 'Actor':
         column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     'select DISTINCT person.fullname from acts, person where acts.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
                      column_name,
                      "Actor")
     elif table == 'Clip':
         column_name = 'clip_title'
-        search_query(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 200',
+        search_query(engine, input, names, 'select * from Clip where clip_title ilike :search limit 200',
                      column_name,
                      "Clip")
 
     elif table == 'Writer':
         column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     'select DISTINCT person.fullname from writes, person where writes.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
                      column_name,
                      "Writer")
     elif table == 'Director':
         column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     'select DISTINCT person.fullname from directs, person where directs.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
                      column_name,
                      "Director")
     elif table == 'Producer':
         column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search) limit 200',
+                     'select DISTINCT person.fullname from produces, person where produces.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
                      column_name,
                      "Producer")
 
@@ -94,78 +91,81 @@ def search():
     write = request.args.get('writer')
     produce = request.args.get('producer')
 
-    engine = createEngine()
-
     names = []
 
     if not input:
         return render_template('search.html', tables=names, query=input)
 
     if not (c or l or p or clip or a or direct or write or produce):
-        search_country(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 1')
-        search_country(engine, input, names, 'select * from Language where lower(language) like :search limit 1',
+        search_country(engine, input, names, 'select countryname from Country where COUNTRYNAME ilike :search limit 1')
+        search_country(engine, input, names, 'select language from Language where language ilike :search limit 1',
                        "Language")
-        search_country(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 1', "Clip")
-        search_country(engine, input, names, 'select * from person where lower(fullname) like :search limit 1',
+        search_country(engine, input, names, 'select clip_title from Clip where clip_title ilike :search limit 1', "Clip")
+        search_country(engine, input, names, 'select fullname from person where fullname ilike :search limit 1',
                        "Person")
         search_country(engine, input, names,
-                       'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                       'select person.fullname from acts, person where acts.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                        "Actor")
 
         search_country(engine, input, names,
-                       'select * from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                       'select person.fullname from directs, person where directs.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                        "Director")
         search_country(engine, input, names,
-                       'select * from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                       'select person.fullname from writes, person where writes.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                        "Writer")
         search_country(engine, input, names,
-                       'select * from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                       'select person.fullname from produces, person where produces.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                        "Producer")
 
     else:
         if c:
-            search_country(engine, input, names, 'select * from Country where lower(COUNTRYNAME) like :search limit 1')
+            search_country(engine, input, names, 'select countryname from Country where COUNTRYNAME ilike :search limit 1')
         if l:
-            search_country(engine, input, names, 'select * from Language where lower(language) like :search limit 1',
+            search_country(engine, input, names, 'select language from Language where language ilike :search limit 1',
                            "Language")
         if clip:
-            search_country(engine, input, names, 'select * from Clip where lower(clip_title) like :search limit 1',
+            search_country(engine, input, names, 'select clip_title from Clip where clip_title ilike :search limit 1',
                            "Clip")
         if p:
-            search_country(engine, input, names, 'select * from person where lower(fullname) like :search limit 1',
+            search_country(engine, input, names, 'select fullname from person where fullname ilike :search limit 1',
                            "Person")
         if a:
             search_country(engine, input, names,
-                           'select * from acts, person where acts.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                           'select fullname from acts, person where acts.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                            "Actor")
         if direct:
             search_country(engine, input, names,
-                           'select * from directs, person where directs.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                           'select fullname from directs, person where directs.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                            "Director")
         if write:
             search_country(engine, input, names,
-                           'select * from writes, person where writes.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                           'select fullname from writes, person where writes.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                            "Writer")
         if produce:
             search_country(engine, input, names,
-                           'select * from produces, person where produces.person_id = person.person_id AND (lower(person.fullname) like :search) limit 1',
+                           'select fullname from produces, person where produces.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                            "Producer")
     return render_template('search.html', tables=names, query=input)
 
 
 def search_country(engine, input, names, search, country="Country"):
+    start = timeit.timeit()
+
     sql = text(search)
     result = engine.execute(sql, search="%{}%".format(input).lower())
-    row = result.first();
+
+    end = timeit.timeit()
+
+    row = result.first()
     if row:
-        names.append(country);
+        names.append(country)
+    print "Time taken: {} for {}".format((end - start), search)
+
 
 
 @app.route('/predefined/1/')
 def query_result_1():
     c = request.args.get('country')
-    engine = createEngine()
-
     sql = text("""
         SELECT
           C.CLIP_ID,
@@ -193,7 +193,6 @@ def query_result_1():
 @app.route('/predefined/2/')
 def query_result_2():
     c = request.args.get('year')
-    engine = createEngine()
 
     sql = text("""
         SELECT
@@ -222,8 +221,6 @@ def query_result_2():
 def query_result_3():
     y = request.args.get('year')
     c = request.args.get('country')
-
-    engine = createEngine()
 
     sql = text("""
         SELECT
@@ -272,7 +269,6 @@ def insert_clip():
     year = request.args.get('year')
 
     typ = request.args.get('type')
-    engine = createEngine()
     result = engine.execute(text('select max(clip_id) from clip'))
     row = result.first()
     id = row[0] + 1
@@ -294,7 +290,6 @@ def delete_clip():
     except:
         input = request.args.get('id')
         print(type(input))
-    engine = createEngine()
     data = {'clip_id': input}
     if input:
         result = engine.execute(text("Select count(*) from clip where clip_id = :clip_id"), data)
@@ -317,10 +312,6 @@ def delete():
     return render_template('delete.html')
 
 
-def createEngine():
-    engine = create_engine('postgresql://db:db@db.kiru.io/db')
-    engine.connect()
-    return engine
 
 
 if __name__ == '__main__':
