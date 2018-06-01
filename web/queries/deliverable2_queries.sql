@@ -37,11 +37,10 @@ GROUP BY G.GENRE
 ORDER BY g.GENRE;
 
 -- Print the name of actor/actress who has acted in more clips than anyone else
-
-
-SELECT d.FULLNAME
-FROM
-  (SELECT
+SELECT
+  d.FULLNAME
+FROM (
+  SELECT
      P.FULLNAME,
      count(*) AS nb_acts
    FROM PERSON P
@@ -49,66 +48,72 @@ FROM
    GROUP BY P.person_id
    ORDER BY nb_acts DESC
    FETCH FIRST 1 ROW ONLY
-  ) d;
+) d;
 
 -- Print the maximum number of clips any director has directed.
-
-  SELECT
-    P.FULLNAME,
-    count(*) AS nb_acts
-  FROM PERSON P
-    JOIN DIRECTS D2 ON P.PERSON_ID = D2.PERSON_ID
-    JOIN CLIP C2 ON D2.CLIP_ID = C2.CLIP_ID
-  GROUP BY P.FULLNAME
-  ORDER BY nb_acts DESC
-  FETCH FIRST 1 ROWS ONLY;
+SELECT
+  P.FULLNAME,
+  count(*) AS nb_acts
+FROM PERSON P
+  JOIN DIRECTS D2 ON P.PERSON_ID = D2.PERSON_ID
+  JOIN CLIP C2 ON D2.CLIP_ID = C2.CLIP_ID
+GROUP BY P.FULLNAME
+ORDER BY nb_acts DESC
+FETCH FIRST 1 ROWS ONLY;
 
 -- Print the names of people that had at least 2 different jobs in a single clip. For example, if X has both
 -- acted, directed and written movie Y, his/her name should be printed out. On the other hand, if X has
 -- acted as 4 different personas in the same clip, but done nothing else, he/she should not be printed.
 ;
-SELECT d.FULLNAME
+-- TODO: sth is missing here
+SELECT
+  distinct d.FULLNAME
 FROM (
-       SELECT
-         c.CLIP_ID,
-         P.PERSON_ID,
-         p.fullname,
-         count(a.CLIP_ID) AS acts,
-         count(d.CLIP_ID) AS directs,
-         count(w.CLIP_ID) AS writes
-       FROM CLIP C, PERSON P
-         LEFT JOIN ACTS a ON a.PERSON_ID = p.PERSON_ID
-         LEFT JOIN DIRECTS d ON d.PERSON_ID = p.PERSON_ID
-         LEFT JOIN WRITES w ON w.PERSON_ID = p.PERSON_ID
-       WHERE
-         a.CLIP_ID = c.CLIP_ID AND
-         d.CLIP_ID = c.CLIP_ID AND
-         w.CLIP_ID = c.CLIP_ID
-       GROUP BY C.CLIP_ID, P.PERSON_ID
-       HAVING (count(a.CLIP_ID) > 0 AND count(d.CLIP_ID) > 0) OR
-              (count(d.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0) OR
-              (count(a.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0)
-     ) d;
+ SELECT
+   c.CLIP_ID,
+   P.PERSON_ID,
+   p.fullname,
+   count(a.CLIP_ID) AS acts,
+   count(d.CLIP_ID) AS directs,
+   count(w.CLIP_ID) AS writes
+ FROM CLIP C, PERSON P
+   LEFT JOIN ACTS a ON a.PERSON_ID = p.PERSON_ID
+   LEFT JOIN DIRECTS d ON d.PERSON_ID = p.PERSON_ID
+   LEFT JOIN WRITES w ON w.PERSON_ID = p.PERSON_ID
+ WHERE
+   a.CLIP_ID = c.CLIP_ID AND
+   d.CLIP_ID = c.CLIP_ID AND
+   w.CLIP_ID = c.CLIP_ID
+ GROUP BY C.CLIP_ID, P.PERSON_ID
+ HAVING (count(a.CLIP_ID) > 0 AND count(d.CLIP_ID) > 0) OR
+        (count(d.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0) OR
+        (count(a.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0)
+) d
+order by d.fullname asc;
 
 -- Print the 10 most common clip languages
-
-SELECT L.LANGUAGE
+SELECT
+  L.LANGUAGE
 FROM CLIP_LANGUAGE
   JOIN LANGUAGE L ON CLIP_LANGUAGE.LANGUAGE_ID = L.LANGUAGE_ID
 GROUP BY L.LANGUAGE
 ORDER BY count(*) DESC
 FETCH FIRST 10 ROWS ONLY;
+
+
 -- Print the full name of the actor who has performed in the highest number of clips with a user-specified type.
-SELECT p.FULLNAME
-FROM (
-       SELECT
-         a.PERSON_ID,
-         count(*) AS count
-       FROM ACTS A
-         JOIN CLIP C2 ON A.CLIP_ID = C2.CLIP_ID
-       WHERE C2.CLIP_TYPE = 'V'
-       GROUP BY a.PERSON_ID
-     ) b
+with person_act_count as (
+ SELECT
+   a.PERSON_ID,
+   count(*) AS count
+ FROM ACTS A
+   JOIN CLIP C2 ON A.CLIP_ID = C2.CLIP_ID
+ WHERE C2.CLIP_TYPE = 'V'
+ GROUP BY a.PERSON_ID
+)
+SELECT
+  p.FULLNAME
+FROM person_act_count b
   JOIN PERSON p ON p.PERSON_ID = b.PERSON_ID
 ORDER BY b.count DESC
 FETCH FIRST 1 ROWS ONLY;
