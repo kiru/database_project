@@ -235,8 +235,39 @@ where cg.genre_id = (
 --j) Print the names of the actors that have participated in more than 100 clips, of which at least 60% where
 --short but not comedies nor dramas, and have played in more comedies than double the dramas. Print
 --also the number of comedies and dramas each of them participated in.
+-- TODO: not finished yet
+with actor_more_than_100_clips as (
+    select
+      a.person_id               as person_id,
+      count(distinct a.clip_id) as number_of_clips
+    from acts a
+    group by a.person_id
+    having count(distinct a.clip_id) > 100
+),
+short_not_comedy_nor_drama as (
+    -- clips which are not short but not comedies nor dramas
+      select c.clip_id
+      from clip c
+        join clip_genre cg on c.clip_id = cg.clip_id
+        join genre g on cg.genre_id = g.genre_id
+      group by c.clip_id
+      -- is short but not comedy nor drama
+      having array_agg(g.genre) && ARRAY ['Short' :: varchar]
+             and not (array_agg(g.genre) && ARRAY ['Comedy' :: varchar])
+             and not (array_agg(g.genre) && ARRAY ['Drama' :: varchar])
+)
+select
+  a.person_id,
+  aiq.number_of_clips,
+  count(distinct a.clip_id) as short_not_comedies
+from acts a
+  join actor_more_than_100_clips aiq on aiq.person_id = a.person_id
+  join short_not_comedy_nor_drama s on a.clip_id = s.clip_id
+group by a.person_id, aiq.number_of_clips
+having count(distinct a.clip_id) >= 0.6 * aiq.number_of_clips
 
--- TODO
+
+;
 
 --k) Print the number of Dutch movies whose genre is the second most popular one.
 Select
