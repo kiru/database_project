@@ -64,7 +64,6 @@ CREATE TABLE Writes
 
 CREATE TABLE ClipLinks
 (
-  -- we cannot use clip_from_id and clip_to_id as PK, since it's not unique
   cliplink_id  INTEGER,
   clip_from_id INTEGER,
   clip_to_id   INTEGER,
