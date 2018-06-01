@@ -29,6 +29,7 @@ path = '../../../data/db2018imdb/actors.csv'
 df = pd.read_csv(path)
 print('Size of the "acts" table after import: ', df.shape)
 
+
 # get the definition of the language table
 print('Get the person name-id relation...')
 # dfp=person_table()
@@ -73,7 +74,7 @@ print('Maximum length of additional info is ', maxlena)
 dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'CHARACTER'])
 
-# TODO KIRU: I'm not sure if this is correct, and how many we get rid of
-dfsplit.dropna(subset=['CHARACTER'], inplace=True)
+# Replace blanks with 'NA' string to allow a primary key
+dfsplit['CHARACTER'].replace('', 'NA',inplace=True)
 
 import_into_db(dfsplit, 'acts')

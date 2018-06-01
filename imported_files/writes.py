@@ -69,5 +69,6 @@ print('Maximum length of additional info is ', maxlena)
 
 #dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'ROLE'])
+dfsplit['ROLE'].replace('', 'NA',inplace=True)
 
 import_into_db(dfsplit, 'writes')

@@ -66,8 +66,9 @@ print('Maximum length of additional info is ', maxlena)
 
 dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 
-# TODO KIRU: not sure if this is correct
+# drop duplicates and replace missing role with 'NA' to allow composite key here
 dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'ROLE'])
+dfsplit['ROLE'].replace('', 'NA', inplace=True)
 
 # create engine and connect
 import_into_db(dfsplit, 'produces')
