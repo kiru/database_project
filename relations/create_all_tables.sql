@@ -203,3 +203,9 @@ CREATE TABLE Married_to
   FOREIGN KEY (person_id) REFERENCES person (person_id)
 );
 
+
+-- creating indexes:
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE INDEX ix_person_name ON person using gin (fullname gin_trgm_ops);
+CREATE INDEX ix_clip_title ON clip using gin (clip_title gin_trgm_ops);
+CREATE INDEX ix_language ON language using gin (language gin_trgm_ops);
