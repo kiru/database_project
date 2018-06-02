@@ -1,6 +1,5 @@
 --a) Print the names of the top 10 actors ranked by the average rating of their 3 highest-rated clips that where
 --voted by at least 100 people. The actors must have had a role in at least 5 clips (not necessarily rated).
-
 with actors_with_more_than_five_roles as (
     SELECT
       person_id as person_id,
@@ -30,8 +29,11 @@ actor_with_avg_rating as (
   FROM actors_with_more_than_five_roles actor
 )
 select
-  *
+  p.fullname,
+  b.number_of_clips_he_played,
+  b.avg_rating
 FROM actor_with_avg_rating b
+  join person p on p.person_id = b.person_id
   where b.avg_rating is not NULL
 order by b.avg_rating DESC
 fetch first 10 rows ONLY;
@@ -62,7 +64,6 @@ order by b.decade desc;
 
 --c) For any video game director, print the first year he/she directed a game, his/her name and all his/her
 -- game titles from that year.
-;
 with director_first_year_he_directed as (
   select
     d.person_id as person_id,
@@ -146,7 +147,6 @@ having( min(d.rank) >= max(w.rank) +2) --data selection criterion on ranking
 order by aw.fullname
 ;
 
-
 --f) Print the names of the actors that are not married and have participated in more than 2 clips that they
 --both acted in and co-directed it.
 with unmarried_person as (
@@ -173,6 +173,8 @@ from person p
   join unmarried_person a on a.person_id = p.person_id
   join acting_codirectors d on d.person_id = p.person_id
 order by p.fullname
+;
+select * From married_to;
 ;
 
 --g) Print the names of screenplay story writers who have worked with more than 2 producers.
@@ -202,21 +204,34 @@ from person p
 --h) Compute the average rating of an actor's clips (for each actor) when she/he has a leading role (first 3
 -- credits in the clip).
 with person_leading as (
-    Select DISTINCT aa.person_id, fullname
+    select
+      DISTINCT aa.person_id,
+      fullname,
+      orders_credit
     from acts aa
       join clip_rating cr on aa.clip_id = cr.clip_id
       join person p on aa.person_id = p.person_id
-      where to_number(orders_credit, '99999999.9') <= 3
+      where orders_credit <= 3
 )
-Select b.person_id, b.fullname,
+select
+  b.person_id,
+  b.fullname,
   (
     Select round(avg(cr.rank), 2)
     from acts a
       join clip_rating cr on a.clip_id = cr.clip_id
-      where to_number(orders_credit, '99999999.9') <= 3 AND b.person_id = a.person_id
+      where orders_credit <= 3
+            AND b.person_id = a.person_id
   ) as avg_rating
 from person_leading b
   order by b.person_id DESC
+;
+create index ix_acts_order_credit on acts(orders_credit);
+;
+create index ix_clip_rating on clip_rating(clip_id, rank);
+;
+drop index ix_acts_order_credit;
+drop index ix_clip_rating;
 ;
 
 --i) Compute the average rating for the clips whose genre is the most popular genre.
@@ -238,7 +253,6 @@ where cg.genre_id = ( select * from most_popular_genre )
 --j) Print the names of the actors that have participated in more than 100 clips, of which at least 60% where
 --short but not comedies nor dramas, and have played in more comedies than double the dramas. Print
 --also the number of comedies and dramas each of them participated in.
--- TODO: not finished yet
 with actor_more_than_100_clips as (
     select
       a.person_id               as person_id,
@@ -258,16 +272,41 @@ short_not_comedy_nor_drama as (
       having array_agg(g.genre) && ARRAY ['Short' :: varchar]
              and not (array_agg(g.genre) && ARRAY ['Comedy' :: varchar])
              and not (array_agg(g.genre) && ARRAY ['Drama' :: varchar])
+),
+actor_of_interest as (
+  select
+    a.person_id,
+    aiq.number_of_clips,
+    count(distinct a.clip_id) as short_not_comedies
+  from acts a
+    join actor_more_than_100_clips aiq on aiq.person_id = a.person_id
+    join short_not_comedy_nor_drama s on a.clip_id = s.clip_id
+    join person p on a.person_id = p.person_id
+  group by a.person_id, aiq.number_of_clips
+  having count(distinct a.clip_id) >= 0.6 * aiq.number_of_clips
 )
 select
-  a.person_id,
-  aiq.number_of_clips,
-  count(distinct a.clip_id) as short_not_comedies
-from acts a
-  join actor_more_than_100_clips aiq on aiq.person_id = a.person_id
-  join short_not_comedy_nor_drama s on a.clip_id = s.clip_id
-group by a.person_id, aiq.number_of_clips
-having count(distinct a.clip_id) >= 0.6 * aiq.number_of_clips
+  p.fullname,
+  (
+    select
+      count(*)
+    from acts a
+      join clip c on a.clip_id = c.clip_id
+      join clip_genre cg on c.clip_id = cg.clip_id
+      join genre g on cg.genre_id = g.genre_id
+    where g.genre = 'Drama' and a.person_id = p.person_id
+  ) as nr_drama,
+  (
+    select
+      count(*)
+    from acts a
+      join clip c on a.clip_id = c.clip_id
+      join clip_genre cg on c.clip_id = cg.clip_id
+      join genre g on cg.genre_id = g.genre_id
+    where g.genre = 'Comedy' and a.person_id = p.person_id
+  ) as nr_comedy
+from actor_of_interest aoi
+  join person p on p.person_id = aoi.person_id
 ;
 
 --k) Print the number of Dutch movies whose genre is the second most popular one.
@@ -282,7 +321,6 @@ GROUP BY cg.genre_id
 order by count(cg.genre_id) desc
 offset 1
 fetch first 1 rows only;
-
 
 --l) Print the name of the producer whose role is coord
 select

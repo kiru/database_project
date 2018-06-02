@@ -31,7 +31,7 @@ CREATE TABLE Acts
   person_id       INTEGER,
   clip_id         INTEGER,
   additional_info VARCHAR(1024),
-  orders_credit   VARCHAR(20),
+  orders_credit   INTEGER,
   character       VARCHAR(1024),
   PRIMARY KEY (person_id, clip_id, character),
   FOREIGN KEY (person_id) REFERENCES Person (person_id),
@@ -209,3 +209,8 @@ CREATE INDEX ix_person_name ON person using gin (fullname gin_trgm_ops);
 CREATE INDEX ix_clip_title ON clip using gin (clip_title gin_trgm_ops);
 CREATE INDEX ix_language ON language using gin (language gin_trgm_ops);
 CREATE INDEX ix_country ON country using gin (countryname gin_trgm_ops);
+
+create index ix_act_character on acts(person_id, character);
+create index ix_rating on clip_rating(clip_id, votes, rank);
+
+create index ix_acts_order_credit on acts(orders_credit);
