@@ -65,55 +65,55 @@
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck1" name = 'clips'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck1" name='clips' {% if check_clip %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck1">Clips</label>
                     </div>
                 </label>
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck2" name = 'language'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck2" name='language' {% if check_language %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck2">Language</label>
                     </div>
                 </label>
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck3" name = 'country'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" name='country' {% if check_country %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck3">Country</label>
                     </div>
                 </label>
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck3" name = 'person'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck3" name='person' {% if check_person %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck3">Person</label>
                     </div>
                 </label>
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck4" name = 'actor'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck4" name='actor' {% if check_actor %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck4">Actor</label>
                     </div>
                 </label>
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck5" name = 'director'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck5" name='director' {% if check_director %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck5">Director</label>
                     </div>
                 </label>
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck6" name = 'writer'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck6" name='writer' {% if check_writer %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck6">Writer</label>
                     </div>
                 </label>
 
                 <label class="custom-control custom-checkbox">
                     <div class="custom-control custom-checkbox">
-                        <input type="checkbox" class="custom-control-input" id="customCheck7" name = 'producer'>
+                        <input type="checkbox" class="custom-control-input" id="customCheck7" name='producer' {% if check_producer %} checked {% endif %}>
                         <label class="custom-control-label" for="customCheck7">Producer</label>
                     </div>
                 </label>
@@ -144,23 +144,40 @@
 ================================================== -->
 <!-- Placed at the end of the document so the pages load faster -->
 <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-        crossorigin="anonymous"></script>
+<script src="/static/jquery-3.3.1.min.js"></script>
+<script type="application/javascript">
+    $(function () {
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : sParameterName[1];
+                }
+            }
+        };
+
+        $(".advanced").hide();
+        $("#btn-advanced").click(function () {
+            $(".advanced").toggle();
+        });
+
+        if (getUrlParameter('clips')) {
+            $(".advanced").show();
+        }
+    });
+</script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"
         integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
         crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"
         integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm"
         crossorigin="anonymous"></script>
-<script src="/static/jquery-3.3.1.min.js"></script>
-<script type="application/javascript">
-    $(function () {
-        $(".advanced").hide();
-        $("#btn-advanced").click(function () {
-            $(".advanced").toggle();
-        });
-    });
-</script>
 </body>
 </html>

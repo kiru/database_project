@@ -41,29 +41,28 @@
         <h3 class="text-muted">IMDB Movies Database</h3>
     </div>
 
-     {% if tables and query %}
+    {% if tables and query %}
         <h2>Found results for {{ table_name }}: </h2>
-         <div>
+        <div>
             <table class="table table-condensed ">
                 <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                    </tr>
+                <tr>
+                    <th scope="col">Name</th>
+                </tr>
                 </thead>
                 <tbody>
-                {%  for table in tables %}
+                {% for table in tables %}
                     <tr>
-                            <th scope="row">
-                                <span>{{ table }}</span>
-                            </th>
-
+                        <th scope="row">
+                            <span>{{ table }}</span>
+                        </th>
                     </tr>
                 {% endfor %}
-                 </tbody>
+                </tbody>
             </table>
         </div>
 
-     {% endif %}
+    {% endif %}
 
 </div> <!-- /container -->
 
