@@ -217,3 +217,7 @@ create index ix_acts_order_credit on acts(orders_credit);
 
 CREATE INDEX ix_directs_role ON directs using gin (role gin_trgm_ops);
 create index ix_clip_year on clip(clip_id, clip_year);
+
+create index ix_role on directs(role);
+create index ix_person_fullname on person(person_id, fullname);
+create index ix_married on married_to(person_id);

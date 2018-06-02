@@ -172,33 +172,33 @@ select
 from person p
   join unmarried_person a on a.person_id = p.person_id
   join acting_codirectors d on d.person_id = p.person_id
-order by p.fullname
+order by p.fullname;
+
+create index ix_role on directs(role);
+create index ix_person_fullname on person(person_id, fullname);
+create index ix_married on married_to(person_id);
 ;
-select * From married_to;
+drop index ix_role;
+drop index ix_person_fullname;
+drop index ix_married;
 ;
 
 --g) Print the names of screenplay story writers who have worked with more than 2 producers.
-with screenplay_clips as (
+with screenplay_writer as (
   select
-    w.person_id,
-    w.clip_id
+    distinct w.person_id
   from writes w
  where work_type like '%screenplay story%'
-),
-twoproducer_clips as (
-  select
-    c.clip_id
-  from clip c
-    join produces p on p.clip_id=c.clip_id
-  group by c.clip_id
-  having count(distinct p.person_id)>1
 )
-select distinct
-  p.fullname
-from person p
-  join screenplay_clips sc on sc.person_id=p.person_id
-  join twoproducer_clips tpc on tpc.clip_id=sc.clip_id
-
+select
+  person.fullname
+from clip c
+  join produces p on c.clip_id = p.clip_id
+  join writes w on c.clip_id = w.clip_id
+  join person person on person.person_id = w.person_id
+where w.person_id in ( select * from screenplay_writer )
+group by w.person_id, person.fullname
+having count(distinct p.person_id) > 2
 ;
 
 --h) Compute the average rating of an actor's clips (for each actor) when she/he has a leading role (first 3
@@ -225,13 +225,6 @@ select
   ) as avg_rating
 from person_leading b
   order by b.person_id DESC
-;
-create index ix_acts_order_credit on acts(orders_credit);
-;
-create index ix_clip_rating on clip_rating(clip_id, rank);
-;
-drop index ix_acts_order_credit;
-drop index ix_clip_rating;
 ;
 
 --i) Compute the average rating for the clips whose genre is the most popular genre.
