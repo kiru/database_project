@@ -81,7 +81,7 @@ from director_first_year_he_directed df
   join directs d on d.person_id = df.person_id
   join person p on p.person_id = d.person_id
   join clip c on c.clip_id = d.clip_id
-where extract(year from c.clip_year ) = df.first_year
+where extract(year from c.clip_year ) = df.first_year;
 ;
 
 --d) For each year, print the title, year and rank-in-year of top 3 clips, based on their ranking.
