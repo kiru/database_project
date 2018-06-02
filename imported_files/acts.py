@@ -75,6 +75,8 @@ dfsplit.rename(columns={'FullName': 'PERSON_ID'}, inplace=True)
 dfsplit.drop_duplicates(inplace=True, subset=['PERSON_ID', 'CLIP_ID', 'CHARACTER'])
 
 # Replace blanks with 'NA' string to allow a primary key
+print('replace character with NA')
 dfsplit['CHARACTER'].replace('', 'NA',inplace=True)
+dfsplit['CHARACTER'].replace('None', 'NA',inplace=True)
 
 import_into_db(dfsplit, 'acts')

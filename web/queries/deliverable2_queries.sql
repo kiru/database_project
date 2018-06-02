@@ -1,4 +1,4 @@
--- Print the name and length of the 10 longest clips that were released in France
+-- a) Print the name and length of the 10 longest clips that were released in France
 SELECT
   C.CLIP_ID,
   C.CLIP_TITLE,
@@ -11,7 +11,7 @@ GROUP BY c.CLIP_ID, c.CLIP_TITLE
 ORDER BY runtime DESC, c.CLIP_ID, C.CLIP_TITLE
 FETCH FIRST 10 ROWS ONLY;
 
--- Compute the number of clips released per country in 2001
+-- b) Compute the number of clips released per country in 2001
 SELECT
   c2.COUNTRYNAME,
   count(*) AS nb_of_clips
@@ -21,8 +21,8 @@ FROM CLIP c
 WHERE extract(YEAR FROM r.RELEASE_DATE) = 2001
 GROUP BY c2.COUNTRYNAME
 ORDER BY c2.COUNTRYNAME;
--- Compute the numbers of clips per genre released in the USA after 2013.
 
+-- c) Compute the numbers of clips per genre released in the USA after 2013.
 SELECT
   G.GENRE,
   count(*) AS nb_of_clips
@@ -36,7 +36,7 @@ WHERE extract(YEAR FROM r.RELEASE_DATE) > 2013
 GROUP BY G.GENRE
 ORDER BY g.GENRE;
 
--- Print the name of actor/actress who has acted in more clips than anyone else
+-- d) Print the name of actor/actress who has acted in more clips than anyone else
 SELECT
   d.FULLNAME
 FROM (
@@ -50,7 +50,7 @@ FROM (
    FETCH FIRST 1 ROW ONLY
 ) d;
 
--- Print the maximum number of clips any director has directed.
+-- e) Print the maximum number of clips any director has directed.
 SELECT
   P.FULLNAME,
   count(*) AS nb_acts
@@ -61,12 +61,12 @@ GROUP BY P.FULLNAME
 ORDER BY nb_acts DESC
 FETCH FIRST 1 ROWS ONLY;
 
--- Print the names of people that had at least 2 different jobs in a single clip. For example, if X has both
+-- f) Print the names of people that had at least 2 different jobs in a single clip. For example, if X has both
 -- acted, directed and written movie Y, his/her name should be printed out. On the other hand, if X has
 -- acted as 4 different personas in the same clip, but done nothing else, he/she should not be printed.
 ;
 SELECT
-  d.FULLNAME
+  distinct d.FULLNAME
 FROM (
    SELECT
      c.CLIP_ID,
@@ -94,10 +94,11 @@ FROM (
           (count(d.clip_id) > 0 and count(pr.clip_id) > 0) OR
           (count(w.clip_id) > 0 and count(pr.clip_id) > 0)
  )
- )d;
+ )d
+order by d.fullname;
 ;
 
--- Print the 10 most common clip languages
+-- g) Print the 10 most common clip languages
 SELECT
   L.LANGUAGE
 FROM CLIP_LANGUAGE
@@ -107,7 +108,7 @@ ORDER BY count(*) DESC
 FETCH FIRST 10 ROWS ONLY;
 
 
--- Print the full name of the actor who has performed in the highest number of clips with a user-specified type.
+-- h) Print the full name of the actor who has performed in the highest number of clips with a user-specified type.
 with person_act_count as (
  SELECT
    a.PERSON_ID,
@@ -123,6 +124,3 @@ FROM person_act_count b
   JOIN PERSON p ON p.PERSON_ID = b.PERSON_ID
 ORDER BY b.count DESC
 FETCH FIRST 1 ROWS ONLY;
-
-SELECT *
-FROM COUNTRY;

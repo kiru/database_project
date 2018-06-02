@@ -291,3 +291,8 @@ From produces
 join person p on produces.person_id = p.person_id
 where role like 'coordinating producer: %'
 order by p.fullname;
+
+;
+create table directs_copy as (select * From directs);
+drop table directs;
+
