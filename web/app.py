@@ -145,7 +145,10 @@ def search():
             search_country(engine, input, names,
                            'select fullname from produces, person where produces.person_id = person.person_id AND (person.fullname ilike :search) limit 1',
                            "Producer")
-    return render_template('search.html', tables=names, query=input)
+    return render_template('search.html',
+                           tables=names,
+                           query=input, check_country=c, check_langauge=l, check_person=p, check_clip=clip, check_actor=a,
+                           check_director=direct, check_write=write, check_produce=produce)
 
 
 def search_country(engine, input, names, search, country="Country"):
