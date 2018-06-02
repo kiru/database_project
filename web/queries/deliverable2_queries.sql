@@ -115,7 +115,7 @@ with person_act_count as (
    count(*) AS count
  FROM ACTS A
    JOIN CLIP C2 ON A.CLIP_ID = C2.CLIP_ID
- WHERE C2.CLIP_TYPE = 'V'
+ WHERE C2.CLIP_TYPE = :clip_type
  GROUP BY a.PERSON_ID
 )
 SELECT

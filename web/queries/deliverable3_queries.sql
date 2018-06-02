@@ -1,39 +1,42 @@
 --a) Print the names of the top 10 actors ranked by the average rating of their 3 highest-rated clips that where
 --voted by at least 100 people. The actors must have had a role in at least 5 clips (not necessarily rated).
 
--- The actors must have had a role in at least 5 clips
+with actors_with_more_than_five_roles as (
+    SELECT
+      person_id as person_id,
+      count(character) as number_of_clips_he_played
+    FROM acts
+    GROUP BY person_id
+    HAVING count(character) >= 5
+),
+actor_with_avg_rating as (
+  SELECT
+  actor.*,
+  (
+    -- gives the average of the top rated clips
+    SELECT
+      avg(f.rank)
+    FROM (
+      -- find 3 highest-rated clips
+      SELECT
+        r.rank
+      FROM clip_rating r
+      JOIN acts a ON a.clip_id = r.clip_id
+      WHERE votes >= 100 AND a.person_id = actor.person_id AND r.rank IS NOT NULL
+      ORDER BY r.rank DESC
+      FETCH FIRST 3 ROWS ONLY
+    )f
+  ) as avg_rating
+  FROM actors_with_more_than_five_roles actor
+)
 select
   *
-FROM (
-  SELECT
-    d.*,
-    (
-      SELECT
-        avg(f.rank)
-      FROM (
-        SELECT
-          r.rank
-        FROM clip_rating r
-        JOIN acts a ON a.clip_id = r.clip_id
-        WHERE votes >= 100 AND a.person_id = d.person_id AND r.rank IS NOT NULL
-        ORDER BY r.rank DESC
-        FETCH FIRST 3 ROWS ONLY
-      )f
-    ) as avg_rating
-  FROM (
-      SELECT
-        person_id,
-        count(character)
-      FROM acts
-      GROUP BY person_id
-      HAVING count(character) >= 5
-      ) d
-) b
-where b.avg_rating is not NULL
+FROM actor_with_avg_rating b
+  where b.avg_rating is not NULL
 order by b.avg_rating DESC
-fetch first 10 rows ONLY ;
-
+fetch first 10 rows ONLY;
 ;
+
 --b) Compute the average rating of the top-100 rated clips per decade in decreasing order.
 select
   b.decade,
@@ -55,90 +58,87 @@ from (
     FROM clip
 ) b
 where b.decade is not null
-order by avg_rating;
+order by b.decade desc;
 
 --c) For any video game director, print the first year he/she directed a game, his/her name and all his/her
 -- game titles from that year.
-select
-  *
-from (
+;
+with director_first_year_he_directed as (
   select
-    p.fullname,
-    c.clip_id,
-    c.clip_title,
-    (
-      select
-        extract(year from min(r.release_date))
-      from released r
-      where r.clip_id = d.clip_id
-    ) as first_year
-  From directs d
-    join person p on d.person_id = p.person_id
-    join clip c on d.clip_id = c.clip_id
-  where d.role like 'game director:%'
-) x
--- only keep the one from the same year
-where x.first_year in (
-  select
-    extract(year from r.release_date)
-  from released r
-  where r.clip_id = x.clip_id
+    d.person_id as person_id,
+    min(extract(year from clip_year)) as first_year
+  from directs d
+    join clip c on c.clip_id = d.clip_id
+  where d.role like '%game%'
+  group by d.person_id
 )
+select
+  distinct p.fullname,
+  df.first_year,
+  c.clip_title
+from director_first_year_he_directed df
+  join directs d on d.person_id = df.person_id
+  join person p on p.person_id = d.person_id
+  join clip c on c.clip_id = d.clip_id
+where extract(year from c.clip_year ) = df.first_year
 ;
 
 --d) For each year, print the title, year and rank-in-year of top 3 clips, based on their ranking.
-
-WITH summary AS (
-    select
-      C.CLIP_YEAR,
-      C.clip_title,
-      CR.RANK,
-      ROW_NUMBER() OVER(PARTITION BY C.CLIP_YEAR
-                           ORDER BY CR.RANK DESC, CR.VOTES DESC) AS rowind
-FROM CLIP C
-  JOIN CLIP_RATING CR ON C.CLIP_ID = CR.CLIP_ID)
+WITH clip_year_rank_in_year AS (
+  select
+    C.CLIP_YEAR,
+    C.clip_title,
+    CR.RANK,
+    ROW_NUMBER() OVER(PARTITION BY C.CLIP_YEAR ORDER BY CR.RANK DESC, CR.VOTES DESC) AS rowind
+  FROM CLIP C
+  JOIN CLIP_RATING CR ON C.CLIP_ID = CR.CLIP_ID
+)
 SELECT
-  extract(YEAR FROM S.CLIP_YEAR),
-  S.CLIP_TITLE,
-  S.RANK
-FROM summary S
-WHERE S.rowind <=3 and S.CLIP_YEAR IS NOT NULL
-ORDER BY S.clip_year desc;
+  extract(YEAR FROM s.CLIP_YEAR) as year,
+  s.CLIP_TITLE,
+  s.RANK
+FROM clip_year_rank_in_year s
+WHERE s.rowind <=3 and s.CLIP_YEAR IS NOT NULL
+ORDER BY s.clip_year desc;
 
 
 --e) Print the names of all directors who have also written scripts for clips, in all of which they were
 --additionally actors (but not necessarily directors)
 -- and every clip they directed has at least two more points in ranking than any clip they wrote.
 
-with directed as (select distinct --join to get directors with their clip_ratings
-                    p.person_id,
-                    cr.rank
-                  from person p
-                    join directs d on p.person_id = d.person_id
-                    join clip c on d.clip_id = c.clip_id
-                    join clip_rating cr on c.clip_id = cr.clip_id
-                  ),
-        wrote as (select distinct --join to get writers with their clip_ratings
-                    p.person_id,
-                    cr.rank
-                  from person p
-                    join writes w on p.person_id = w.person_id
-                    join clip c on w.clip_id = c.clip_id
-                    join clip_rating cr on c.clip_id = cr.clip_id
-                  )
+--join to get directors with their clip_ratings
+with directed as (
+  select
+    distinct p.person_id,
+    cr.rank
+  from person p
+    join directs d on p.person_id = d.person_id
+    join clip c on d.clip_id = c.clip_id
+    join clip_rating cr on c.clip_id = cr.clip_id
+),
+wrote as (
+  select distinct --join to get writers with their clip_ratings
+    p.person_id,
+    cr.rank
+from person p
+  join writes w on p.person_id = w.person_id
+  join clip c on w.clip_id = c.clip_id
+  join clip_rating cr on c.clip_id = cr.clip_id
+)
 select
  aw.fullname,
  min(d.rank) as minpoints_directed,
  max(w.rank) as minpoints_written
-from
-(select distinct --join to get writers who acted in their written clips
-  p.person_id,
-  p.fullname
-from person p
-  join writes w on p.person_id = w.person_id
-  join acts a on p.person_id = a.person_id
-  join clip c on w.clip_id = c.clip_id and a.clip_id = c.clip_id
-) as aw
+from (
+  select
+      distinct --join to get writers who acted in their written clips
+      p.person_id,
+      p.fullname
+  from person p
+    join writes w on p.person_id = w.person_id
+    join acts a on p.person_id = a.person_id
+    join clip c on w.clip_id = c.clip_id and a.clip_id = c.clip_id
+  ) as aw
 join directed d on d.person_id=aw.person_id --final join of above tables
 join wrote w on w.person_id=aw.person_id
 group by aw.fullname
@@ -149,57 +149,58 @@ order by aw.fullname
 
 --f) Print the names of the actors that are not married and have participated in more than 2 clips that they
 --both acted in and co-directed it.
-(
-with  unmarried_person as
-      (select
-        p.person_id
-      from person p
-        left join married_to m on m.person_id = p.person_id
-        where m.person_id is null),
-      acting_codirectors as
-      (select
-        p.person_id
-      from person p
-        join acts a on p.person_id = a.person_id
-        join directs d on p.person_id = d.person_id
-        join clip c on d.clip_id = c.clip_id and a.clip_id = c.clip_id
-        where d.role like 'co-director%'
-        group by p.person_id
-        having count(p.person_id)>2)
+with unmarried_person as (
+    select
+      p.person_id
+    from person p
+      left join married_to m on m.person_id = p.person_id
+    where m.person_id is null
+),
+acting_codirectors as (
+  select
+    p.person_id
+  from person p
+    join acts a on p.person_id = a.person_id
+    join directs d on p.person_id = d.person_id
+    join clip c on d.clip_id = c.clip_id and a.clip_id = c.clip_id
+  where d.role like 'co-director%'
+  group by p.person_id
+  having count(p.person_id)>2
+)
 select
   p.fullname
 from person p
   join unmarried_person a on a.person_id = p.person_id
   join acting_codirectors d on d.person_id = p.person_id
-);
+order by p.fullname
+;
 
 --g) Print the names of screenplay story writers who have worked with more than 2 producers.
-(
-with  screenplay_clips as
-        (select
-          w.person_id,
-          w.clip_id
-        from writes w
-         where work_type like '%screenplay story%'),
-      twoproducer_clips as
-        (select
-          c.clip_id
-        from clip c
-          join produces p on p.clip_id=c.clip_id
-        group by c.clip_id
-        having count(distinct p.person_id)>1)
+with screenplay_clips as (
+  select
+    w.person_id,
+    w.clip_id
+  from writes w
+ where work_type like '%screenplay story%'
+),
+twoproducer_clips as (
+  select
+    c.clip_id
+  from clip c
+    join produces p on p.clip_id=c.clip_id
+  group by c.clip_id
+  having count(distinct p.person_id)>1
+)
 select distinct
   p.fullname
 from person p
   join screenplay_clips sc on sc.person_id=p.person_id
   join twoproducer_clips tpc on tpc.clip_id=sc.clip_id
- );
 
+;
 
 --h) Compute the average rating of an actor's clips (for each actor) when she/he has a leading role (first 3
 -- credits in the clip).
--- TODO: we cannot do this, since we loose the information of the order of the credit.
-
 with person_leading as (
     Select DISTINCT aa.person_id, fullname
     from acts aa
@@ -215,15 +216,11 @@ Select b.person_id, b.fullname,
       where to_number(orders_credit, '99999999.9') <= 3 AND b.person_id = a.person_id
   ) as avg_rating
 from person_leading b
-  order by b.person_id DESC;
+  order by b.person_id DESC
+;
 
 --i) Compute the average rating for the clips whose genre is the most popular genre.
--- Select g.
-select
-  round(avg(cr.rank), 2)
-from clip_rating  cr
-  join clip_genre cg on cg.clip_id = cr.clip_id
-where cg.genre_id = (
+with most_popular_genre as (
   select
     cg.genre_id
   from clip_genre cg
@@ -231,6 +228,11 @@ where cg.genre_id = (
   order by count(*)  desc
   fetch first 1 rows only
 )
+select
+  round(avg(cr.rank), 2)
+from clip_rating  cr
+  join clip_genre cg on cg.clip_id = cr.clip_id
+where cg.genre_id = ( select * from most_popular_genre )
 ;
 
 --j) Print the names of the actors that have participated in more than 100 clips, of which at least 60% where
@@ -266,8 +268,6 @@ from acts a
   join short_not_comedy_nor_drama s on a.clip_id = s.clip_id
 group by a.person_id, aiq.number_of_clips
 having count(distinct a.clip_id) >= 0.6 * aiq.number_of_clips
-
-
 ;
 
 --k) Print the number of Dutch movies whose genre is the second most popular one.
@@ -291,8 +291,5 @@ From produces
 join person p on produces.person_id = p.person_id
 where role like 'coordinating producer: %'
 order by p.fullname;
-
 ;
-create table directs_copy as (select * From directs);
-drop table directs;
 
