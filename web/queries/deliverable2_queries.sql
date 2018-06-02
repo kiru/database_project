@@ -65,31 +65,37 @@ FETCH FIRST 1 ROWS ONLY;
 -- acted, directed and written movie Y, his/her name should be printed out. On the other hand, if X has
 -- acted as 4 different personas in the same clip, but done nothing else, he/she should not be printed.
 ;
--- TODO: sth is missing here
 SELECT
-  distinct d.FULLNAME
+  d.FULLNAME
 FROM (
- SELECT
-   c.CLIP_ID,
-   P.PERSON_ID,
-   p.fullname,
-   count(a.CLIP_ID) AS acts,
-   count(d.CLIP_ID) AS directs,
-   count(w.CLIP_ID) AS writes
- FROM CLIP C, PERSON P
-   LEFT JOIN ACTS a ON a.PERSON_ID = p.PERSON_ID
-   LEFT JOIN DIRECTS d ON d.PERSON_ID = p.PERSON_ID
-   LEFT JOIN WRITES w ON w.PERSON_ID = p.PERSON_ID
- WHERE
-   a.CLIP_ID = c.CLIP_ID AND
-   d.CLIP_ID = c.CLIP_ID AND
-   w.CLIP_ID = c.CLIP_ID
- GROUP BY C.CLIP_ID, P.PERSON_ID
- HAVING (count(a.CLIP_ID) > 0 AND count(d.CLIP_ID) > 0) OR
-        (count(d.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0) OR
-        (count(a.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0)
-) d
-order by d.fullname asc;
+   SELECT
+     c.CLIP_ID,
+     P.PERSON_ID,
+     p.fullname,
+     count(a.CLIP_ID) AS acts,
+     count(d.CLIP_ID) AS directs,
+     count(w.CLIP_ID) AS writes,
+     count(pr.CLIP_ID) as produces
+   FROM CLIP C, PERSON P
+     LEFT JOIN ACTS a ON a.PERSON_ID = p.PERSON_ID
+     LEFT JOIN DIRECTS d ON d.PERSON_ID = p.PERSON_ID
+     LEFT JOIN WRITES w ON w.PERSON_ID = p.PERSON_ID
+     LEFT JOIN produces pr ON pr.person_id = P.person_id
+   WHERE
+     a.CLIP_ID = c.CLIP_ID AND
+     d.CLIP_ID = c.CLIP_ID AND
+     w.CLIP_ID = c.CLIP_ID AND
+     pr.clip_id = c.clip_id
+   GROUP BY C.CLIP_ID, P.PERSON_ID
+   HAVING ((count(a.CLIP_ID) > 0 AND count(d.CLIP_ID) > 0) OR
+          (count(d.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0) OR
+          (count(a.CLIP_ID) > 0 AND count(w.CLIP_ID) > 0) OR
+          (count(a.clip_id) > 0 and count(pr.clip_id) > 0) OR
+          (count(d.clip_id) > 0 and count(pr.clip_id) > 0) OR
+          (count(w.clip_id) > 0 and count(pr.clip_id) > 0)
+ )
+ )d;
+;
 
 -- Print the 10 most common clip languages
 SELECT
