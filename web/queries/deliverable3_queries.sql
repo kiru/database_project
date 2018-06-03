@@ -173,14 +173,6 @@ from person p
   join unmarried_person a on a.person_id = p.person_id
   join acting_codirectors d on d.person_id = p.person_id
 order by p.fullname;
-
-create index ix_role on directs(role);
-create index ix_person_fullname on person(person_id, fullname);
-create index ix_married on married_to(person_id);
-;
-drop index ix_role;
-drop index ix_person_fullname;
-drop index ix_married;
 ;
 
 --g) Print the names of screenplay story writers who have worked with more than 2 producers.
@@ -267,6 +259,7 @@ short_not_comedy_nor_drama as (
              and not (array_agg(g.genre) && ARRAY ['Drama' :: varchar])
 ),
 actor_of_interest as (
+  -- select actors, where 60% where short but not comedy nor drama
   select
     a.person_id,
     aiq.number_of_clips,
@@ -277,29 +270,33 @@ actor_of_interest as (
     join person p on a.person_id = p.person_id
   group by a.person_id, aiq.number_of_clips
   having count(distinct a.clip_id) >= 0.6 * aiq.number_of_clips
+),
+actor_with_nr_comedy_drama as (
+  select
+    p.fullname,
+    (
+      select count(*)
+      from acts a
+        join clip c on a.clip_id = c.clip_id
+        join clip_genre cg on c.clip_id = cg.clip_id
+        join genre g on cg.genre_id = g.genre_id
+      where g.genre = 'Drama' and a.person_id = p.person_id
+    ) as nr_drama,
+    (
+      select count(*)
+      from acts a
+        join clip c on a.clip_id = c.clip_id
+        join clip_genre cg on c.clip_id = cg.clip_id
+        join genre g on cg.genre_id = g.genre_id
+      where g.genre = 'Comedy' and a.person_id = p.person_id
+    ) as nr_comedy
+  from actor_of_interest aoi
+    join person p on p.person_id = aoi.person_id
 )
 select
-  p.fullname,
-  (
-    select
-      count(*)
-    from acts a
-      join clip c on a.clip_id = c.clip_id
-      join clip_genre cg on c.clip_id = cg.clip_id
-      join genre g on cg.genre_id = g.genre_id
-    where g.genre = 'Drama' and a.person_id = p.person_id
-  ) as nr_drama,
-  (
-    select
-      count(*)
-    from acts a
-      join clip c on a.clip_id = c.clip_id
-      join clip_genre cg on c.clip_id = cg.clip_id
-      join genre g on cg.genre_id = g.genre_id
-    where g.genre = 'Comedy' and a.person_id = p.person_id
-  ) as nr_comedy
-from actor_of_interest aoi
-  join person p on p.person_id = aoi.person_id
+  *
+from actor_with_nr_comedy_drama a
+where a.nr_comedy > 2*a.nr_drama;
 ;
 
 --k) Print the number of Dutch movies whose genre is the second most popular one.
