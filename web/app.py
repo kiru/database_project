@@ -7,18 +7,23 @@ from sqlalchemy import text
 import time
 
 import sys
+import json
+
 
 def createEngine():
     engine = create_engine('postgresql://db:db@db.kiru.io/db')
     engine.connect()
     return engine
 
+
 app = Flask(__name__)
 engine = createEngine()
+
 
 @app.route('/')
 def hello_world():
     return redirect('/search')
+
 
 @app.route('/search/show/<table>/')
 def search_result(table):
@@ -100,7 +105,8 @@ def search():
         search_country(engine, input, names, 'select countryname from Country where COUNTRYNAME ilike :search limit 1')
         search_country(engine, input, names, 'select language from Language where language ilike :search limit 1',
                        "Language")
-        search_country(engine, input, names, 'select clip_title from Clip where clip_title ilike :search limit 1', "Clip")
+        search_country(engine, input, names, 'select clip_title from Clip where clip_title ilike :search limit 1',
+                       "Clip")
         search_country(engine, input, names, 'select fullname from person where fullname ilike :search limit 1',
                        "Person")
         search_country(engine, input, names,
@@ -119,7 +125,8 @@ def search():
 
     else:
         if c:
-            search_country(engine, input, names, 'select countryname from Country where COUNTRYNAME ilike :search limit 1')
+            search_country(engine, input, names,
+                           'select countryname from Country where COUNTRYNAME ilike :search limit 1')
         if l:
             search_country(engine, input, names, 'select language from Language where language ilike :search limit 1',
                            "Language")
@@ -147,7 +154,8 @@ def search():
                            "Producer")
     return render_template('search.html',
                            tables=names,
-                           query=input, check_country=c, check_langauge=l, check_person=p, check_clip=clip, check_actor=a,
+                           query=input, check_country=c, check_langauge=l, check_person=p, check_clip=clip,
+                           check_actor=a,
                            check_director=direct, check_write=write, check_produce=produce)
 
 
@@ -163,7 +171,6 @@ def search_country(engine, input, names, search, country="Country"):
     if row:
         names.append(country)
     print("Time taken: {} for {}".format((end - start), search))
-
 
 
 @app.route('/predefined/1/')
@@ -193,6 +200,7 @@ def query_result_1():
 
     return render_template('predefined_result_1.html', names=names)
 
+
 @app.route('/predefined/2/')
 def query_result_2():
     c = request.args.get('year')
@@ -217,7 +225,7 @@ def query_result_2():
             "number": row[1]
         })
 
-    return render_template('predefined_result_2.html', names=names)\
+    return render_template('predefined_result_2.html', names=names)
 
 
 @app.route('/predefined/3/')
@@ -284,23 +292,62 @@ def insert_clip():
 
     return render_template('insert-clip.html', clip_title=title, clip_year=year, clip_type=typ, clip_id=id)
 
-@app.route('/insert/actor/autocomplete/person/')
+
+@app.route('/insert/actor/autocomplete/person')
 def insert_actor_autocomplete_person():
     q = request.args.get('q')
-    sql = text('select fullname from person where fullname ilike :search')
+    sql = text('select person_id, fullname from person where fullname ilike :search order by fullname limit 200')
     result = engine.execute(sql, search="%{}%".format(q).lower())
 
     res = []
+    for row in result:
+        res.append({
+            "id": row[0],
+            "value": row[1]
+        })
 
-    return str(list(result))
+    return json.dumps(res)
+
 
 @app.route('/insert/actor/autocomplete/clip')
 def insert_actor_autocomplete_clip():
     q = request.args.get('q')
-    sql = 'select person_id, fullname from person where fullname ilike :search'
+    sql = text('select clip_id, clip_title from clip where clip_title ilike :search order by clip_title limit 200')
     result = engine.execute(sql, search="%{}%".format(q).lower())
 
-    return '["data","sadaaaa","Wooo"]' # TODO return result as a list for autocomplete
+    res = []
+    for row in result:
+        res.append({
+            "id": row[0],
+            "value": row[1]
+        })
+
+    return json.dumps(res)
+
+
+@app.route('/insert/actor/save', methods=['POST'])
+def insert_actor_save():
+    data = {
+        'person_id': (request.form.get('person_id')),
+        'clip_id': (request.form.get('clip_id')),
+        'c': (request.form.get('character')),
+        'a': (request.form.get('additional_info')),
+        'o': (request.form.get('orders_credits'))
+    }
+
+    print(json.dumps(data, indent=4))
+
+    result = engine.execute(text('select count(*) from acts where acts.clip_id = :c and acts.person_id = :p'),
+                            p=(request.form.get('person_id')), c=request.form.get('clip_id'))
+    row = result.first()
+    if (row[0] > 0):
+        return render_template('insert-actor-done.html', data=data, failed='True')
+    else:
+        engine.execute(text(
+        "INSERT INTO acts (person_id, clip_id, additional_info, \"character\", orders_credit)  VALUES (:person_id, :clip_id, :a, :c, :o)"),
+        data)
+        return render_template('insert-actor-done.html', failed='False')
+
 
 @app.route('/insert/actor/')
 def insert_actor():
@@ -309,13 +356,13 @@ def insert_actor():
     character = request.args.get('character')
     additional_info = request.args.get('additional_info')
     orders_credits = request.args.get('orders_credits')
-    
+
     result = engine.execute(text('select max(clip_id) from clip'))
     row = result.first()
     id = row[0] + 1
     typ = "2"
     year = 2000
-    title ="2"
+    title = "2"
     # data = {'clip_id': id, 'clip_type': typ, 'clip_year': year, 'clip_title': title}
 
     # if title and year and type:

@@ -44,36 +44,38 @@
     </div>
 
     <div>
-        <form method = "GET">
+        <form method="POST" action="save">
             <h2>Add new Actor</h2>
             <div class="form-group row">
                 <label for="example-text-input" class="col-2 col-form-label">Name</label>
                 <div class="col-10">
-                    <input class="form-control" type="text" value="" id="example-text-input" name = "person_id">
+                    <input class="form-control" type="hidden" value="" id="person_id" name="person_id">
+                    <input class="form-control" type="text" value="" id="example-text-input" name="person_suggest">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="example-search-input" class="col-2 col-form-label">Clip</label>
                 <div class="col-10">
-                    <input class="form-control" type="text" value="" id="example-search-input" name = "clip_id">
+                    <input class="form-control" type="hidden" value="" id="clip_id" name="clip_id">
+                    <input class="form-control" type="text" value="" id="example-search-input" name="clip_suggest">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="example-search-input" class="col-2 col-form-label">Character</label>
                 <div class="col-10">
-                    <input class="form-control" type="text" value="" id="example-search-input" name = "character">
+                    <input class="form-control" type="text" value="" id="example-search-input" name="character">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="example-search-input" class="col-2 col-form-label">Add. Info</label>
                 <div class="col-10">
-                    <input class="form-control" type="text" value="" id="example-search-input" name = "additional_info">
+                    <input class="form-control" type="text" value="" id="example-search-input" name="additional_info">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="example-search-input" class="col-2 col-form-label">Credits Order</label>
                 <div class="col-10">
-                    <input class="form-control" type="text" value="" id="example-search-input" name = "orders_credits">
+                    <input class="form-control" type="text" value="" id="example-search-input" name="orders_credits">
                 </div>
             </div>
             <div class="form-group float-right">
@@ -82,12 +84,6 @@
         </form>
     </div>
 
-    <br/>
-    {% if clip_title and clip_year and clip_type %}
-        <h2>Inserted title: {{ clip_title }}, year: {{ clip_year }}, type: {{ clip_type }}, id: {{ clip_id }}</h2>
-    {% else %}
-        <h2>Please fill all fields!</h2>
-    {% endif %}
 </div> <!-- /container -->
 
 <!-- Bootstrap core JavaScript
@@ -108,9 +104,35 @@
 <script type="text/javascript">
     $(function () {
         new autoComplete({
-            selector: 'input[name="person_id"]',
-            source: function(term, response){
-                $.getJSON('/insert/actor/autocomplete/person', { q: term }, function(data){ response('{a:"asd"}'); });
+            selector: 'input[name="person_suggest"]',
+            minChars: 2,
+            source: function (term, response) {
+
+                $.getJSON('/insert/actor/autocomplete/person', {q: term}, function (data) {
+                    response(data);
+                });
+            },
+            renderItem: function (item, search) {
+                return '<div class="autocomplete-suggestion" data-id="' + item.id + '" data-val="' + item.value + '">' + item.value + '</div>';
+            },
+            onSelect: function (e, term, item) {
+                $("#person_id").val(jQuery(item).attr('data-id'));
+            }
+        });
+
+        new autoComplete({
+            selector: 'input[name="clip_suggest"]',
+            minChars: 2,
+            source: function (term, response) {
+                $.getJSON('/insert/actor/autocomplete/clip', {q: term}, function (data) {
+                    response(data);
+                });
+            },
+            renderItem: function (item, search) {
+                return '<div class="autocomplete-suggestion" data-id="' + item.id + '" data-val="' + item.value + '">' + item.value + '</div>';
+            },
+            onSelect: function (e, term, item) {
+                $("#clip_id").val(jQuery(item).attr('data-id'));
             }
         });
     });
