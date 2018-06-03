@@ -162,7 +162,7 @@ def search_country(engine, input, names, search, country="Country"):
     row = result.first()
     if row:
         names.append(country)
-    print "Time taken: {} for {}".format((end - start), search)
+    print("Time taken: {} for {}".format((end - start), search))
 
 
 
@@ -284,6 +284,47 @@ def insert_clip():
 
     return render_template('insert-clip.html', clip_title=title, clip_year=year, clip_type=typ, clip_id=id)
 
+@app.route('/insert/actor/autocomplete/person/')
+def insert_actor_autocomplete_person():
+    q = request.args.get('q')
+    sql = text('select fullname from person where fullname ilike :search')
+    result = engine.execute(sql, search="%{}%".format(q).lower())
+
+    res = []
+
+    return str(list(result))
+
+@app.route('/insert/actor/autocomplete/clip')
+def insert_actor_autocomplete_clip():
+    q = request.args.get('q')
+    sql = 'select person_id, fullname from person where fullname ilike :search'
+    result = engine.execute(sql, search="%{}%".format(q).lower())
+
+    return '["data","sadaaaa","Wooo"]' # TODO return result as a list for autocomplete
+
+@app.route('/insert/actor/')
+def insert_actor():
+    person_id = request.args.get('person_id')
+    clip_id = request.args.get('clip_id')
+    character = request.args.get('character')
+    additional_info = request.args.get('additional_info')
+    orders_credits = request.args.get('orders_credits')
+    
+    result = engine.execute(text('select max(clip_id) from clip'))
+    row = result.first()
+    id = row[0] + 1
+    typ = "2"
+    year = 2000
+    title ="2"
+    # data = {'clip_id': id, 'clip_type': typ, 'clip_year': year, 'clip_title': title}
+
+    # if title and year and type:
+    #     engine.execute(text(
+    #         "INSERT INTO clip (clip_id, clip_type, clip_year, clip_title) VALUES (:clip_id, :clip_type, to_date(:clip_year, 'YYYY'), :clip_title)"),
+    #         data)
+
+    return render_template('insert-actor.html', clip_title=title, clip_year=year, clip_type=typ, clip_id=id)
+
 
 @app.route('/delete/clip/')
 def delete_clip():
@@ -313,8 +354,6 @@ def insert():
 @app.route('/delete/')
 def delete():
     return render_template('delete.html')
-
-
 
 
 if __name__ == '__main__':

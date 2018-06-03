@@ -151,10 +151,10 @@ order by aw.fullname
 --both acted in and co-directed it.
 with unmarried_person as (
     select
-      p.person_id
+      distinct p.person_id
     from person p
       left join married_to m on m.person_id = p.person_id
-    where m.person_id is null
+    where m.person_id is null or m.marital_status not like 'married%'
 ),
 acting_codirectors as (
   select

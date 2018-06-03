@@ -1,7 +1,7 @@
 CREATE TABLE Person
 (
   person_id INTEGER,
-  fullname  VARCHAR(1024),
+  fullname  VARCHAR(1024) UNIQUE,
   PRIMARY KEY (person_id)
 );
 create index ix_person on person(fullname);
