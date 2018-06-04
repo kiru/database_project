@@ -2,10 +2,9 @@
 
 ### TODO
 
-☐ Import all tables into Oracle
-☐ Add Insert/Delete for Clip
-☐ Add Insert/Delete for Clip
-
+☐ Paging
+☐ Show titles for actor / write / director
+☐ Add delete link
 
 
 ### UI
@@ -20,8 +19,6 @@ To install ui:
 > pip install flask
 
 > pip install sqlalchemy
-
-
 
 
 
