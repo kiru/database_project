@@ -77,8 +77,8 @@ def search_result(table):
         search_query(engine,
                      input,
                      names,
-                     'select distinct clip_title as "Clip", to_char(clip_year, \'YYYY\') as "Year" from Clip where clip_title ilike :search limit 50 OFFSET :offset',
-                     ['Clip', 'Year'],
+                     'select distinct clip_title as "Clip", clip_id as "ID", to_char(clip_year, \'YYYY\') as "Year" from Clip where clip_title ilike :search limit 50 OFFSET :offset',
+                     ['Clip', 'Year', 'ID'],
                      "Clip",
                      offset
                      )
