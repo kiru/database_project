@@ -29,49 +29,56 @@ def hello_world():
 def search_result(table):
     input = request.args.get('query')
     names = []
+
     if table == 'Country':
-        column_name = 'countryname'
-        search_query(engine, input, names, 'select * from Country where COUNTRYNAME ilike :search limit 200',
-                     column_name)
+        search_query(engine, input, names, 'select countryname as "Country" from Country where COUNTRYNAME ilike :search limit 200',
+                     ['Country'])
+
     elif table == 'Language':
-        column_name = 'language'
-        search_query(engine, input, names, 'select * from Language where language ilike :search limit 200',
-                     column_name,
+        search_query(engine, input, names, 'select language as "Language" from Language where language ilike :search limit 200',
+                     ['Language'],
                      "Language")
+
     elif table == 'Person':
-        column_name = 'fullname'
-        search_query(engine, input, names, 'select * from Person where fullname ilike :search limit 200',
-                     column_name,
+        search_query(engine, input, names, 'select fullname as "Name" from Person where fullname ilike :search limit 200',
+                     ['Name'],
                      "Person")
+
     elif table == 'Actor':
-        column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from acts, person where acts.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
-                     column_name,
+                     'select DISTINCT person.fullname as "Actor", clip.clip_title as "Clip" from acts, person, clip '
+                        'where acts.person_id = person.person_id and clip.clip_id = acts.clip_id '
+                        'AND (person.fullname ilike :search) limit 200',
+
+                     ['Actor', "Clip"],
                      "Actor")
     elif table == 'Clip':
-        column_name = 'clip_title'
-        search_query(engine, input, names, 'select * from Clip where clip_title ilike :search limit 200',
-                     column_name,
+        search_query(engine, input, names, 'select clip_title as "Clip", to_char(clip_year, \'MM.DD.YYYY\') as "Year" from Clip where clip_title ilike :search limit 200',
+                     ['Clip', 'Year'],
                      "Clip")
 
     elif table == 'Writer':
-        column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from writes, person where writes.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
-                     column_name,
+                     'select DISTINCT person.fullname as "Name", clip_title as "Clip" from writes, person, clip '
+                        'where writes.person_id = person.person_id and clip.clip_id = writes.clip_id '
+                        'AND (person.fullname ilike :search) limit 200',
+                     ['Name', 'Clip'],
                      "Writer")
+        
     elif table == 'Director':
-        column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from directs, person where directs.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
-                     column_name,
+                     'select DISTINCT person.fullname as "Name", clip_title as "Clip" from directs, person, clip '
+                        'where directs.person_id = person.person_id and clip.clip_id = directs.clip_id '
+                        'AND (person.fullname ilike :search) limit 200',
+                     ['Name', 'Clip'],
                      "Director")
+        
     elif table == 'Producer':
-        column_name = 'fullname'
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname from produces, person where produces.person_id = person.person_id AND (person.fullname ilike :search) limit 200',
-                     column_name,
+                     'select DISTINCT person.fullname as "Name", clip.clip_title as "Clip" from produces, person, clip '
+                        'where produces.person_id = person.person_id and clip.clip_id = produces.clip_id '
+                        'AND (person.fullname ilike :search) limit 200',
+                     ['Name', 'Clip'],
                      "Producer")
 
     return render_template('search-result.html', tables=names, query=input, table_name=table)
@@ -81,7 +88,10 @@ def search_query(engine, input, names, search, column, country="Country"):
     sql = text(search)
     result = engine.execute(sql, search="%{}%".format(input).lower())
     for row in result:
-        names.append(row[column])
+        d = {}
+        for c in column:
+            d[c] = row[c]
+        names.append(d)
 
 
 @app.route('/search/')
@@ -170,6 +180,7 @@ def search_country(engine, input, names, search, country="Country"):
     row = result.first()
     if row:
         names.append(country)
+
     print("Time taken: {} for {}".format((end - start), search))
 
 
