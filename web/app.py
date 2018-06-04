@@ -28,19 +28,23 @@ def hello_world():
 @app.route('/search/show/<table>/')
 def search_result(table):
     input = request.args.get('query')
+    offset = request.args.get('offset')
+    if(offset is None):
+        offset = 0
+
     names = []
 
     if table == 'Country':
-        search_query(engine, input, names, 'select countryname as "Country" from Country where COUNTRYNAME ilike :search limit 200',
+        search_query(engine, input, names, 'select countryname as "Country" from Country where COUNTRYNAME ilike :search limit 50',
                      ['Country'])
 
     elif table == 'Language':
-        search_query(engine, input, names, 'select language as "Language" from Language where language ilike :search limit 200',
+        search_query(engine, input, names, 'select language as "Language" from Language where language ilike :search limit 50',
                      ['Language'],
                      "Language")
 
     elif table == 'Person':
-        search_query(engine, input, names, 'select fullname as "Name" from Person where fullname ilike :search limit 200',
+        search_query(engine, input, names, 'select fullname as "Name" from Person where fullname ilike :search limit 50',
                      ['Name'],
                      "Person")
 
@@ -48,20 +52,25 @@ def search_result(table):
         search_query(engine, input, names,
                      'select DISTINCT person.fullname as "Actor", clip.clip_title as "Clip" from acts, person, clip '
                         'where acts.person_id = person.person_id and clip.clip_id = acts.clip_id '
-                        'AND (person.fullname ilike :search) limit 200',
+                        'AND (person.fullname ilike :search) limit 50',
 
                      ['Actor', "Clip"],
                      "Actor")
     elif table == 'Clip':
-        search_query(engine, input, names, 'select clip_title as "Clip", to_char(clip_year, \'MM.DD.YYYY\') as "Year" from Clip where clip_title ilike :search limit 200',
+        search_query(engine,
+                     input,
+                     names,
+                     'select distinct clip_title as "Clip", to_char(clip_year, \'YYYY\') as "Year" from Clip where clip_title ilike :search limit 50 OFFSET :offset',
                      ['Clip', 'Year'],
-                     "Clip")
+                     "Clip",
+                     offset
+                     )
 
     elif table == 'Writer':
         search_query(engine, input, names,
                      'select DISTINCT person.fullname as "Name", clip_title as "Clip" from writes, person, clip '
                         'where writes.person_id = person.person_id and clip.clip_id = writes.clip_id '
-                        'AND (person.fullname ilike :search) limit 200',
+                        'AND (person.fullname ilike :search) limit 50',
                      ['Name', 'Clip'],
                      "Writer")
         
@@ -69,7 +78,7 @@ def search_result(table):
         search_query(engine, input, names,
                      'select DISTINCT person.fullname as "Name", clip_title as "Clip" from directs, person, clip '
                         'where directs.person_id = person.person_id and clip.clip_id = directs.clip_id '
-                        'AND (person.fullname ilike :search) limit 200',
+                        'AND (person.fullname ilike :search) limit 50',
                      ['Name', 'Clip'],
                      "Director")
         
@@ -77,16 +86,16 @@ def search_result(table):
         search_query(engine, input, names,
                      'select DISTINCT person.fullname as "Name", clip.clip_title as "Clip" from produces, person, clip '
                         'where produces.person_id = person.person_id and clip.clip_id = produces.clip_id '
-                        'AND (person.fullname ilike :search) limit 200',
+                        'AND (person.fullname ilike :search) limit 50',
                      ['Name', 'Clip'],
                      "Producer")
 
-    return render_template('search-result.html', tables=names, query=input, table_name=table)
+    return render_template('search-result.html', tables=names, query=input, table_name=table, next=(int(offset) + 50), prev=(int(offset) - 50))
 
 
-def search_query(engine, input, names, search, column, country="Country"):
+def search_query(engine, input, names, search, column, country="Country", offset=0):
     sql = text(search)
-    result = engine.execute(sql, search="%{}%".format(input).lower())
+    result = engine.execute(sql, search="%{}%".format(input).lower(), offset=offset)
     for row in result:
         d = {}
         for c in column:
@@ -307,7 +316,7 @@ def insert_clip():
 @app.route('/insert/actor/autocomplete/person')
 def insert_actor_autocomplete_person():
     q = request.args.get('q')
-    sql = text('select person_id, fullname from person where fullname ilike :search order by fullname limit 200')
+    sql = text('select person_id, fullname from person where fullname ilike :search order by fullname limit 50')
     result = engine.execute(sql, search="%{}%".format(q).lower())
 
     res = []
@@ -323,7 +332,7 @@ def insert_actor_autocomplete_person():
 @app.route('/insert/actor/autocomplete/clip')
 def insert_actor_autocomplete_clip():
     q = request.args.get('q')
-    sql = text('select clip_id, clip_title from clip where clip_title ilike :search order by clip_title limit 200')
+    sql = text('select clip_id, clip_title from clip where clip_title ilike :search order by clip_title limit 50')
     result = engine.execute(sql, search="%{}%".format(q).lower())
 
     res = []

@@ -66,6 +66,12 @@
                 {% endfor %}
                 </tbody>
             </table>
+            {% if prev >= 0 %}
+                <a class="btn btn-primary" href="?query={{ query }}&offset={{ prev }}">Previous</a>
+            {% endif %}
+            {% if tables|length == 50 %}
+                <a class="btn btn-primary" href="?query={{ query }}&offset={{ next }}">Next</a>
+            {% endif %}
         </div>
 
     {% endif %}

@@ -167,7 +167,16 @@
             $(".advanced").toggle();
         });
 
-        if (getUrlParameter('clips')) {
+        if (getUrlParameter('clips')
+            || getUrlParameter('language')
+            || getUrlParameter('person')
+            || getUrlParameter('actor')
+            || getUrlParameter('director')
+            || getUrlParameter('writer')
+            || getUrlParameter('producer')
+        ) {
+
+
             $(".advanced").show();
         }
     });
