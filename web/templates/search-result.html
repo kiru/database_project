@@ -46,16 +46,22 @@
         <div>
             <table class="table table-condensed ">
                 <thead>
+
                 <tr>
-                    <th scope="col">Name</th>
+                    {% for key in tables[0] %}
+                        <th scope="col">{{ key }}</th>
+                    {% endfor %}
                 </tr>
+
                 </thead>
                 <tbody>
                 {% for table in tables %}
                     <tr>
-                        <th scope="row">
-                            <span>{{ table }}</span>
-                        </th>
+                        {% for key in table %}
+                            <th scope="row">
+                                <span>{{ table[key] }}</span>
+                            </th>
+                        {% endfor %}
                     </tr>
                 {% endfor %}
                 </tbody>
