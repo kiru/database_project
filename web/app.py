@@ -25,6 +25,30 @@ def hello_world():
     return redirect('/search')
 
 
+@app.route('/search/show/<table>/delete/')
+def search_result_delete(table):
+    clip_id = request.args.get('clip_id')
+    person_id = request.args.get('person_id')
+
+    query = request.args.get('query')
+    offset = request.args.get('offset')
+
+    if table == 'Actor':
+        engine.execute(text("delete from acts where clip_id = :clip_id and person_id = :person_id"), clip_id=clip_id, person_id=person_id)
+
+    if table == 'Writer':
+        engine.execute(text("delete from writes where clip_id = :clip_id and person_id = :person_id"), clip_id=clip_id, person_id=person_id)
+
+    if table == 'Producer':
+        engine.execute(text("delete from produces where clip_id = :clip_id and person_id = :person_id"), clip_id=clip_id, person_id=person_id)
+
+    if table == 'Director':
+        engine.execute(text("delete from directs where clip_id = :clip_id and person_id = :person_id"), clip_id=clip_id, person_id=person_id)
+
+    return redirect('/search/show/' + table + "/?query=" + query + "&offset=" + offset)
+
+
+
 @app.route('/search/show/<table>/')
 def search_result(table):
     input = request.args.get('query')
@@ -48,15 +72,8 @@ def search_result(table):
                      ['Name'],
                      "Person")
 
-    elif table == 'Actor':
-        search_query(engine, input, names,
-                     'select DISTINCT person.fullname as "Actor", clip.clip_title as "Clip" from acts, person, clip '
-                        'where acts.person_id = person.person_id and clip.clip_id = acts.clip_id '
-                        'AND (person.fullname ilike :search) limit 50',
-
-                     ['Actor', "Clip"],
-                     "Actor")
     elif table == 'Clip':
+
         search_query(engine,
                      input,
                      names,
@@ -66,31 +83,43 @@ def search_result(table):
                      offset
                      )
 
+
+    elif table == 'Actor':
+        search_query(engine, input, names,
+                     'select DISTINCT person.fullname as "Actor", person.person_id, clip.clip_id, clip.clip_title as "Clip" from acts, person, clip '
+                        'where acts.person_id = person.person_id and clip.clip_id = acts.clip_id '
+                        'AND (person.fullname ilike :search) limit 50',
+
+                     ['Actor', "Clip", "clip_id", "person_id"],
+                     "Actor")
+
     elif table == 'Writer':
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname as "Name", clip_title as "Clip" from writes, person, clip '
+                     'select DISTINCT person.fullname as "Name", clip_title as "Clip", person.person_id, clip.clip_id from writes, person, clip '
                         'where writes.person_id = person.person_id and clip.clip_id = writes.clip_id '
                         'AND (person.fullname ilike :search) limit 50',
-                     ['Name', 'Clip'],
+                     ['Name', 'Clip', "clip_id", "person_id"],
                      "Writer")
         
     elif table == 'Director':
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname as "Name", clip_title as "Clip" from directs, person, clip '
+                     'select DISTINCT person.fullname as "Name", clip_title as "Clip",person.person_id, clip.clip_id  from directs, person, clip '
                         'where directs.person_id = person.person_id and clip.clip_id = directs.clip_id '
                         'AND (person.fullname ilike :search) limit 50',
-                     ['Name', 'Clip'],
+                     ['Name', 'Clip', "clip_id", "person_id"],
                      "Director")
         
     elif table == 'Producer':
         search_query(engine, input, names,
-                     'select DISTINCT person.fullname as "Name", clip.clip_title as "Clip" from produces, person, clip '
+                     'select DISTINCT person.fullname as "Name", clip.clip_title as "Clip", person.person_id, clip.clip_id from produces, person, clip '
                         'where produces.person_id = person.person_id and clip.clip_id = produces.clip_id '
                         'AND (person.fullname ilike :search) limit 50',
-                     ['Name', 'Clip'],
+                     ['Name', 'Clip', "clip_id", "person_id"],
                      "Producer")
 
-    return render_template('search-result.html', tables=names, query=input, table_name=table, next=(int(offset) + 50), prev=(int(offset) - 50))
+    return render_template('search-result.html', tables=names, query=input,
+                           has_delete='True',
+                           table_name=table, next=(int(offset) + 50), prev=(int(offset) - 50))
 
 
 def search_query(engine, input, names, search, column, country="Country", offset=0):

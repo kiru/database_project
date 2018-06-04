@@ -2,8 +2,6 @@
 
 ### TODO
 
-☐ Paging
-☐ Show titles for actor / write / director
 ☐ Add delete link
 
 

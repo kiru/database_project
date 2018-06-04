@@ -49,8 +49,16 @@
 
                 <tr>
                     {% for key in tables[0] %}
-                        <th scope="col">{{ key }}</th>
+                        {% if key != 'clip_id' and key != 'person_id' %}
+                            <th scope="col">{{ key }}</th>
+                        {% endif %}
                     {% endfor %}
+                        {% if table_name == 'Actor'
+                            or table_name=='Writer'
+                            or table_name=='Director'
+                            or table_name=='Producer' %}
+                        <th scope="col">Delete</th>
+                    {% endif %}
                 </tr>
 
                 </thead>
@@ -58,10 +66,24 @@
                 {% for table in tables %}
                     <tr>
                         {% for key in table %}
-                            <th scope="row">
-                                <span>{{ table[key] }}</span>
-                            </th>
+                            {% if key != 'clip_id' and key != 'person_id' %}
+                                <th scope="row">
+                                    <span>{{ table[key] }}</span>
+                                </th>
+                            {% endif %}
                         {% endfor %}
+
+                        {% if table_name == 'Actor'
+                            or table_name=='Writer'
+                            or table_name=='Director'
+                            or table_name=='Producer'
+                                %}
+                            <th scope="col">
+                                <a class="btn btn-danger"
+                                   href="delete/?clip_id={{ table['clip_id'] }}&person_id={{ table['person_id'] }}&query={{ query }}&offset={{ next - 50 }}">Delete</a>
+                            </th>
+                        {% endif %}
+
                     </tr>
                 {% endfor %}
                 </tbody>
