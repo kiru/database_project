@@ -1,10 +1,6 @@
 # Database project
-
-### TODO
-
-☐ Add delete link
-
-
+### User Interface
+![Image of UI](https://octodex.github.com/images/yaktocat.png)
 ### UI
 To install ui:
 
